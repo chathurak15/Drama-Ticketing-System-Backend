@@ -16,4 +16,5 @@ public class UserResponseDTO {
     private String phoneNumber;
     private String status;
     private RoleType role;
+    private String image;
 }

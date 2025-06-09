@@ -45,4 +45,21 @@ public class UserContoller {
         return ResponseEntity.ok(userService.updateUser(registerDTO));
     }
 
+    //get user by userid
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('Admin','User','Organizer','TheatreManager')")
+    public ResponseEntity<UserResponseDTO> getUser(@PathVariable int id) {
+        if (id != 3){
+            UserResponseDTO user = userService.getUserById(id);
+                return ResponseEntity.ok(user);
+        }
+        return ResponseEntity.ok(new UserResponseDTO());
+    }
+
+    //delete user by userid
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<String> deleteUser(@PathVariable int id) {
+            return ResponseEntity.ok(userService.deleteUser(id));
+    }
 }

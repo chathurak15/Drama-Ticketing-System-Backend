@@ -12,10 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserService {
@@ -30,6 +27,9 @@ public class UserService {
 
     public String registerUser(RegisterDTO registerDTO){
 
+        if ("Admin".equalsIgnoreCase(String.valueOf(registerDTO.getRole()))) {
+            return "Try again! Incorrect user role";
+        }
         //User email check before register
         if (userRepo.existsByEmail(registerDTO.getEmail())) {
             return "Email already in use";
@@ -37,11 +37,10 @@ public class UserService {
 
         // Map DTO to Entity
         User user = modelMapper.map(registerDTO, User.class);
-        String hashedPassword = passwordEncoder.encode(registerDTO.getPassword());
-        user.setPassword(hashedPassword);
+        user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
 
         // Set approval status
-        if (registerDTO.getRole().equals("User")) {
+        if ("User".equalsIgnoreCase(String.valueOf(registerDTO.getRole()))) {
             user.setStatus("approved");
         } else {
             user.setStatus("pending");
@@ -88,8 +87,29 @@ public class UserService {
         user.setFname(registerDTO.getFname());
         user.setLname(registerDTO.getLname());
         user.setPhoneNumber(registerDTO.getPhoneNumber());
+        user.setImage(registerDTO.getImage());
         user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
         userRepo.save(user);
         return "User updated successfully";
+    }
+
+
+    public UserResponseDTO getUserById(int id) {
+        if (!userRepo.existsById(id)) {
+            return null;
+        }
+        User user = userRepo.findById(id).get();
+        if (user == null) {
+            return null;
+        }
+        return modelMapper.map(user,UserResponseDTO.class);
+    }
+
+    public String deleteUser(int id) {
+        if (!userRepo.existsById(id) || id==6) {
+            return "User not found";
+        }
+        userRepo.deleteById(id);
+        return "User deleted successfully";
     }
 }

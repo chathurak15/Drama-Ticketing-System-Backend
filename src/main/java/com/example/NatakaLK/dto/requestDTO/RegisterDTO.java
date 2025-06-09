@@ -16,4 +16,5 @@ public class RegisterDTO {
     private String phoneNumber;
     private String password;
     private RoleType role;
+    private String image;
 }
