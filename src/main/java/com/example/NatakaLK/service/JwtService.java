@@ -2,11 +2,11 @@ package com.example.NatakaLK.service;
 
 import com.example.NatakaLK.dto.requestDTO.LoginDTO;
 import com.example.NatakaLK.dto.responseDTO.LoginResponseDTO;
+import com.example.NatakaLK.dto.responseDTO.UserResponseDTO;
 import com.example.NatakaLK.repo.UserRepo;
 import com.example.NatakaLK.util.JwtUtil;
-import io.jsonwebtoken.Jwts;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,7 +18,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,6 +28,9 @@ public class JwtService implements UserDetailsService {
 
     @Autowired
     private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -61,7 +63,7 @@ public class JwtService implements UserDetailsService {
             authenticate(email,password);
             UserDetails userDetails = loadUserByUsername(email);
             String token = jwtUtil.generateToken(userDetails);
-            LoginResponseDTO loginResponseDTO = new LoginResponseDTO(user, token );
+            LoginResponseDTO loginResponseDTO = new LoginResponseDTO(modelMapper.map(user, UserResponseDTO.class), token );
             return loginResponseDTO;
         } catch (Exception e) {
             throw new RuntimeException(e);

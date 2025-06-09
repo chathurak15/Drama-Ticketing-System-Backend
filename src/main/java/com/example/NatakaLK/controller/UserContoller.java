@@ -1,12 +1,48 @@
 package com.example.NatakaLK.controller;
 
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.example.NatakaLK.dto.requestDTO.RegisterDTO;
+import com.example.NatakaLK.dto.responseDTO.UserResponseDTO;
+import com.example.NatakaLK.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/user")
 @CrossOrigin
-
 public class UserContoller {
+    @Autowired
+    private UserService userService;
+
+    //get all user information with pagination. only admin
+    @GetMapping("/all")
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<Page<UserResponseDTO>>getAllUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam int size) {
+        return ResponseEntity.ok(userService.getAll(page, size));
+    }
+
+    //update User Status only admin
+    @PutMapping("/status")
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<String> updateUserStatus(
+            @RequestParam int id,
+            @RequestParam String status) {
+        return ResponseEntity.ok(userService.updateUserStatus(id,status));
+    }
+
+
+    //update User details
+    @PutMapping("/update")
+    @PreAuthorize("hasAnyRole('Admin','User','Organizer','TheatreManager')")
+    public ResponseEntity<String> updateUser(@RequestBody RegisterDTO registerDTO) {
+        return ResponseEntity.ok(userService.updateUser(registerDTO));
+    }
+
 }

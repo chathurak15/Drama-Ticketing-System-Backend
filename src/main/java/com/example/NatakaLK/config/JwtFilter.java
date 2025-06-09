@@ -37,12 +37,15 @@ public class JwtFilter extends OncePerRequestFilter {
             try {
                 username = jwtUtil.getUsernameFromToken(jwtToken);
             }catch (IllegalArgumentException e) {
-                System.out.println("Unable to get jwt token "+ e.getMessage());
+                handleUnauthorizedResponse(response, "Unable to parse JWT token");
+                return;
             }catch (ExpiredJwtException e) {
-                System.out.println("Jwt token is expired");
+                handleUnauthorizedResponse(response, "JWT token is expired");
+                return;
+            }catch (Exception e) {
+                handleUnauthorizedResponse(response, "Invalid JWT token");
+                return;
             }
-        }else {
-            System.out.println("Authorization header not present");
         }
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = jwtService.loadUserByUsername(username);
@@ -52,10 +55,16 @@ public class JwtFilter extends OncePerRequestFilter {
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } else {
-                logger.info("Validation fails !!");
+                handleUnauthorizedResponse(response, "Token validation failed");
+                return;
             }
         }
 
         filterChain.doFilter(request, response);
+    }
+    private void handleUnauthorizedResponse(HttpServletResponse response, String message) throws IOException {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
+        response.setContentType("application/json");
+        response.getWriter().write("{\"error\": \"" + message + "\"}");
     }
 }
