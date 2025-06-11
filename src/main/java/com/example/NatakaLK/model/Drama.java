@@ -22,7 +22,7 @@ public class Drama {
     private String title;
 
     @Lob
-    @Column(nullable = false)
+    @Column(nullable = false,columnDefinition = "LONGTEXT")
     private String description;
 
     @Column(nullable = false)

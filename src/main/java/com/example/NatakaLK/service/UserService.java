@@ -1,7 +1,9 @@
 package com.example.NatakaLK.service;
 
+import com.example.NatakaLK.dto.paginated.PaginatedDTO;
 import com.example.NatakaLK.dto.requestDTO.RegisterDTO;
 import com.example.NatakaLK.dto.responseDTO.UserResponseDTO;
+import com.example.NatakaLK.exception.NotFoundException;
 import com.example.NatakaLK.model.User;
 import com.example.NatakaLK.repo.UserRepo;
 import org.modelmapper.ModelMapper;
@@ -12,7 +14,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -54,12 +59,22 @@ public class UserService {
     }
 
     // Retrieves a paginated list of users sorted by ID in descending order.
-    public Page<UserResponseDTO> getAll(int page, int size) {
+    public PaginatedDTO getAll(int page, int size) {
         Pageable pageable = PageRequest.of(page, size,Sort.by(Sort.Direction.DESC, "id"));
         Page<User> users = userRepo.findAll(pageable);
+        if (users.hasContent() ) {
+            List<UserResponseDTO> userResponseDTOS = users.getContent()
+                    .stream().map(user -> modelMapper.map(user, UserResponseDTO.class))
+                    .collect(Collectors.toList());
 
-        // Map each User entity to a UserResponseDTO and return the mapped Page
-        return users.map(user -> modelMapper.map(user,UserResponseDTO.class));
+            PaginatedDTO paginatedDTO = new PaginatedDTO();
+            paginatedDTO.setContent(userResponseDTOS);
+            paginatedDTO.setTotalItems(users.getTotalElements());
+            paginatedDTO.setTotalPages(users.getTotalPages());
+            return paginatedDTO;
+        }else {
+            throw new NotFoundException("No users found");
+        }
     }
 
     //check status value validation, Find user by ID, Update user status and save

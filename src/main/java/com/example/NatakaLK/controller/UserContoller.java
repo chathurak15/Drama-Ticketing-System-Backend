@@ -1,5 +1,6 @@
 package com.example.NatakaLK.controller;
 
+import com.example.NatakaLK.dto.paginated.PaginatedDTO;
 import com.example.NatakaLK.dto.requestDTO.RegisterDTO;
 import com.example.NatakaLK.dto.responseDTO.UserResponseDTO;
 import com.example.NatakaLK.service.UserService;
@@ -22,10 +23,15 @@ public class UserContoller {
     //get all user information with pagination. only admin
     @GetMapping("/all")
     @PreAuthorize("hasRole('Admin')")
-    public ResponseEntity<Page<UserResponseDTO>>getAllUsers(
+    public ResponseEntity<?>getAllUsers(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam int size) {
-        return ResponseEntity.ok(userService.getAll(page, size));
+        if (size > 50){
+            return ResponseEntity.badRequest().body("Item size is too large! Maximum allowed is 50.");
+        }else {
+            PaginatedDTO users = userService.getAll(page, size);
+            return ResponseEntity.ok(users);
+        }
     }
 
     //update User Status only admin
