@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DramaDTO {
+public class DramaRequestDTO {
     @NotBlank(message = "Title is required")
     private String title;
 

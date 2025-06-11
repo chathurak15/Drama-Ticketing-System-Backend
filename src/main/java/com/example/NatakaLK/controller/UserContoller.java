@@ -1,17 +1,13 @@
 package com.example.NatakaLK.controller;
 
-import com.example.NatakaLK.dto.paginated.PaginatedDTO;
+import com.example.NatakaLK.dto.responseDTO.PaginatedDTO;
 import com.example.NatakaLK.dto.requestDTO.RegisterDTO;
 import com.example.NatakaLK.dto.responseDTO.UserResponseDTO;
 import com.example.NatakaLK.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-
-import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/user")

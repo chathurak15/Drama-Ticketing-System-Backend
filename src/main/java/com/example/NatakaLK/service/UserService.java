@@ -1,6 +1,6 @@
 package com.example.NatakaLK.service;
 
-import com.example.NatakaLK.dto.paginated.PaginatedDTO;
+import com.example.NatakaLK.dto.responseDTO.PaginatedDTO;
 import com.example.NatakaLK.dto.requestDTO.RegisterDTO;
 import com.example.NatakaLK.dto.responseDTO.UserResponseDTO;
 import com.example.NatakaLK.exception.NotFoundException;
@@ -15,7 +15,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 

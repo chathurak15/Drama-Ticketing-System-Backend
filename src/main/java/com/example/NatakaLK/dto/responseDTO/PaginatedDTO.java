@@ -1,4 +1,4 @@
-package com.example.NatakaLK.dto.paginated;
+package com.example.NatakaLK.dto.responseDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

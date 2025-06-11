@@ -1,5 +1,6 @@
-package com.example.NatakaLK.dto.responseDTO;
-import com.example.NatakaLK.model.Actor;
+package com.example.NatakaLK.dto.requestDTO;
+
+import com.example.NatakaLK.dto.responseDTO.ActorResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,12 +10,13 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DramaResponseDTO {
-    private String drama;
+
+public class DramaUpdateDTO {
+    private int id;
     private String title;
     private String description;
     private int duration;
     private String videoUrl;
     private String image;
-    private List<Actor> actors;
+    private List<Integer> actorIds;
 }

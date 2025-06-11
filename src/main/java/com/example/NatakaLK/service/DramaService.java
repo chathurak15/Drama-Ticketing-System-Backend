@@ -1,19 +1,24 @@
 package com.example.NatakaLK.service;
 
-import com.example.NatakaLK.dto.requestDTO.ActorDTO;
-import com.example.NatakaLK.dto.requestDTO.DramaDTO;
+
+import com.example.NatakaLK.dto.requestDTO.DramaRequestDTO;
+import com.example.NatakaLK.dto.requestDTO.DramaUpdateDTO;
+import com.example.NatakaLK.dto.responseDTO.*;
+import com.example.NatakaLK.exception.NotFoundException;
 import com.example.NatakaLK.model.Actor;
 import com.example.NatakaLK.model.Drama;
 import com.example.NatakaLK.repo.ActorRepo;
 import com.example.NatakaLK.repo.DramaRepo;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,7 +33,8 @@ public class DramaService {
     @Autowired
     private ModelMapper modelMapper;
 
-    public String addDrama(DramaDTO dramaDTO) {
+    //add drama
+    public String addDrama(DramaRequestDTO dramaDTO) {
         if (dramaDTO ==null) {
             return "Drama details was missing";
         }
@@ -47,5 +53,98 @@ public class DramaService {
         drama.setActors(actors);
         dramaRepo.save(drama);
         return "Drama Added";
+    }
+
+    //get all drama details with pagination(must be pass the size and page value)
+    public PaginatedDTO getAll(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+        Page<Drama> drams = dramaRepo.findAll(pageable);
+        if (drams.hasContent()){
+            List<DramasResponseDTO> dramasResponseDTOS = drams.getContent()
+                    .stream().map(d -> modelMapper.map(d, DramasResponseDTO.class))
+                    .collect(Collectors.toList());
+
+            return new PaginatedDTO(dramasResponseDTOS,drams.getTotalPages(),drams.getTotalElements());
+        }else{
+            throw new NotFoundException("dramas not found");
+        }
+    }
+
+    //get drama with actor's details by drama id
+    public DramaDTO getDramaById(int id) {
+        if (dramaRepo.existsById(id)){
+            Drama drama = dramaRepo.findById(id).get();
+            List<Integer> actorIds = dramaRepo.getActorsId(id);
+            List<Actor> actors = new ArrayList<>();
+            for (int actorId : actorIds){
+                Actor actor = actorRepo.findById(actorId).get();
+                actors.add(actor);
+            }
+            List<ActorResponseDTO> actorResponseDTOS = actors.stream()
+                    .map(actor -> modelMapper.map(actor, ActorResponseDTO.class)).collect(Collectors.toList());
+
+            return new DramaDTO(
+                    drama.getId(),
+                    drama.getTitle(),
+                    drama.getDescription(),
+                    drama.getDuration(),
+                    drama.getVideoUrl(),
+                    drama.getImage(),
+                    actorResponseDTOS);
+        }else {
+            throw new NotFoundException(id+"drama not found");
+        }
+    }
+
+    //delete drama by drama id
+    public ResponseEntity<String> deleteDrama(int id) {
+        if (dramaRepo.existsById(id)){
+            dramaRepo.deleteById(id);
+            return ResponseEntity.ok("Drama deleted successfully");
+        }else{
+            throw new NotFoundException("drama not found");
+        }
+    }
+
+    //update drama
+    public ResponseEntity<String> updateDrama(DramaUpdateDTO dramaUpdateDTO) {
+        if (dramaRepo.existsById(dramaUpdateDTO.getId())){
+
+            // Fetch actors by ID
+            Set<Actor> actors = new HashSet<>();
+            for (int actorId : dramaUpdateDTO.getActorIds()) {
+                Actor optionalActor = actorRepo.findById(actorId).get();
+                if (optionalActor != null) {
+                    actors.add(optionalActor);
+                }
+            }
+            Drama drama = modelMapper.map(dramaUpdateDTO, Drama.class);
+            drama.setActors(actors);
+            dramaRepo.save(drama);
+            return ResponseEntity.ok("Drama updated successfully");
+        }else {
+            throw new NotFoundException("drama not found");
+        }
+
+    }
+
+    public PaginatedDTO searchDramaByTitle(String title, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+
+        if (title == null || title.trim().isEmpty()) {
+            throw new NotFoundException("Drama title must not be empty");
+        }
+        // Perform a case insensitive search for dramas whose title contains the search keyword
+        Page<Drama> dramaList = dramaRepo.findByTitleContainingIgnoreCase(title, pageable);
+        if (!dramaList.hasContent()) {
+            throw new NotFoundException("No dramas found for title: " + title);
+        }
+        // Convert the list of Drama entities to a list of DramasResponseDTO using ModelMapper
+        List<DramasResponseDTO> dramasResponseDTOS = dramaList.getContent()
+                .stream()
+                .map(d -> modelMapper.map(d, DramasResponseDTO.class))
+                .collect(Collectors.toList());
+
+        return new PaginatedDTO(dramasResponseDTOS, dramaList.getTotalPages(), dramaList.getTotalElements());
     }
 }
