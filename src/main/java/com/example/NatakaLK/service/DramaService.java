@@ -16,7 +16,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -99,17 +98,17 @@ public class DramaService {
     }
 
     //delete drama by drama id
-    public ResponseEntity<String> deleteDrama(int id) {
+    public String deleteDrama(int id) {
         if (dramaRepo.existsById(id)){
             dramaRepo.deleteById(id);
-            return ResponseEntity.ok("Drama deleted successfully");
+            return "Drama deleted successfully";
         }else{
             throw new NotFoundException("drama not found");
         }
     }
 
     //update drama
-    public ResponseEntity<String> updateDrama(DramaUpdateDTO dramaUpdateDTO) {
+    public String updateDrama(DramaUpdateDTO dramaUpdateDTO) {
         Optional<Drama> optionalDrama = dramaRepo.findById(dramaUpdateDTO.getId());
         if (optionalDrama.isPresent()) {
             Drama existingDrama = optionalDrama.get();
@@ -126,11 +125,12 @@ public class DramaService {
             existingDrama.setActors(newActors);
 
             dramaRepo.save(existingDrama);
-            return ResponseEntity.ok("Drama updated successfully");
+            return "Drama updated successfully";
         } else {
             throw new NotFoundException("Drama not found");
         }
     }
+
     public PaginatedDTO searchDramaByTitle(String title, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
 

@@ -1,4 +1,4 @@
-package com.example.NatakaLK.dto.responseDTO;
+package com.example.NatakaLK.dto.requestDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -6,10 +6,11 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
-public class ShowResponseDTO {
+
+public class UpdateShowDTO {
     private int showId;
     private String title;
     private String description;
@@ -17,7 +18,7 @@ public class ShowResponseDTO {
     private String location;
     private Date showDate;
     private String showTime;
-    private DramasResponseDTO drama;
-    private String status;
-    private UserResponseDTO user;
+    private int dramaId;
+    private int userId;
+
 }

@@ -47,18 +47,18 @@ public class DramaController {
     @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<String> deleteDrama(@PathVariable int id) {
         if (id >0){
-            return dramaService.deleteDrama(id);
+            return ResponseEntity.ok(dramaService.deleteDrama(id));
         }
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("Something went wrong");
     }
 
     @PutMapping("/update")
     @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<String> updateDrama(@RequestBody DramaUpdateDTO dramaUpdateDTO) {
         if (dramaUpdateDTO !=null){
-            return dramaService.updateDrama(dramaUpdateDTO);
+            return ResponseEntity.ok(dramaService.updateDrama(dramaUpdateDTO));
         }
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("Something went wrong");
     }
 
     @GetMapping("/find")

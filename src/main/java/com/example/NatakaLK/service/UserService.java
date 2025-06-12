@@ -82,7 +82,7 @@ public class UserService {
         if (!validStatuses.contains(status.toLowerCase())) {
             return "Invalid status";
         }
-        if (!userRepo.findById(id).isEmpty()) {
+        if (userRepo.findById(id).isPresent()) {
             User user = userRepo.findById(id).get();
             user.setStatus(status);
             userRepo.save(user);
