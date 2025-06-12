@@ -47,6 +47,10 @@ public class Show {
     @JoinColumn(name = "drama_id", nullable = false)
     private Drama drama;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     @PrePersist
     protected void onCreate() {
         this.created = new Date();

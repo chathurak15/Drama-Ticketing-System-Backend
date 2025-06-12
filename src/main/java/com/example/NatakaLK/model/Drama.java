@@ -33,7 +33,7 @@ public class Drama {
     @Column(nullable = false)
     private String image;
 
-    @ManyToMany
+    @ManyToMany()
     @JoinTable(
             name = "drama_actor",
             joinColumns = @JoinColumn(name = "drama_id"),

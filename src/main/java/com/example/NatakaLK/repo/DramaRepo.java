@@ -4,11 +4,9 @@ import com.example.NatakaLK.model.Drama;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-
 import java.util.List;
-import java.util.Optional;
 
 public interface DramaRepo extends JpaRepository<Drama, Integer> {
     boolean existsByTitle(String title);
@@ -19,4 +17,9 @@ public interface DramaRepo extends JpaRepository<Drama, Integer> {
     List<Drama> findByTitle(String title);
 
     Page<Drama> findByTitleContainingIgnoreCase(String title, Pageable pageable);
+
+    @Modifying
+    @Query(value = "DELETE FROM drama_actor WHERE drama_id = :dramaId", nativeQuery = true)
+    void deleteDramaActorsByDramaId(int dramaId);
+
 }

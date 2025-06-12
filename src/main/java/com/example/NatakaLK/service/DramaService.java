@@ -9,6 +9,7 @@ import com.example.NatakaLK.model.Actor;
 import com.example.NatakaLK.model.Drama;
 import com.example.NatakaLK.repo.ActorRepo;
 import com.example.NatakaLK.repo.DramaRepo;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,6 +23,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class DramaService {
 
     @Autowired
@@ -108,26 +110,27 @@ public class DramaService {
 
     //update drama
     public ResponseEntity<String> updateDrama(DramaUpdateDTO dramaUpdateDTO) {
-        if (dramaRepo.existsById(dramaUpdateDTO.getId())){
+        Optional<Drama> optionalDrama = dramaRepo.findById(dramaUpdateDTO.getId());
+        if (optionalDrama.isPresent()) {
+            Drama existingDrama = optionalDrama.get();
 
-            // Fetch actors by ID
-            Set<Actor> actors = new HashSet<>();
+            //delete Exit values
+            dramaRepo.deleteDramaActorsByDramaId(existingDrama.getId());
+
+            // Prepare new set of actors
+            Set<Actor> newActors = new HashSet<>();
             for (int actorId : dramaUpdateDTO.getActorIds()) {
-                Actor optionalActor = actorRepo.findById(actorId).get();
-                if (optionalActor != null) {
-                    actors.add(optionalActor);
-                }
+                actorRepo.findById(actorId).ifPresent(newActors::add);
             }
-            Drama drama = modelMapper.map(dramaUpdateDTO, Drama.class);
-            drama.setActors(actors);
-            dramaRepo.save(drama);
+            modelMapper.map(dramaUpdateDTO, existingDrama);
+            existingDrama.setActors(newActors);
+
+            dramaRepo.save(existingDrama);
             return ResponseEntity.ok("Drama updated successfully");
-        }else {
-            throw new NotFoundException("drama not found");
+        } else {
+            throw new NotFoundException("Drama not found");
         }
-
     }
-
     public PaginatedDTO searchDramaByTitle(String title, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
 

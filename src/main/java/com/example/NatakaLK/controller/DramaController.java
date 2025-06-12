@@ -61,7 +61,7 @@ public class DramaController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/search")
+    @GetMapping("/find")
     public ResponseEntity<?> searchDrama(
             @RequestParam String title,@RequestParam int page, @RequestParam  int size) {
         if (size >50){
