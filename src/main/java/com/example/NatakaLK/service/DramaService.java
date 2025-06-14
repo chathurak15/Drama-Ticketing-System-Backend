@@ -17,7 +17,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -57,18 +56,31 @@ public class DramaService {
     }
 
     //get all drama details with pagination(must be pass the size and page value)
-    public PaginatedDTO getAll(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
-        Page<Drama> drams = dramaRepo.findAll(pageable);
-        if (drams.hasContent()){
-            List<DramasResponseDTO> dramasResponseDTOS = drams.getContent()
-                    .stream().map(d -> modelMapper.map(d, DramasResponseDTO.class))
-                    .collect(Collectors.toList());
+    public PaginatedDTO getAll(int page, int size, String title, String sortByRating) {
+            Sort sort = Sort.unsorted();
 
-            return new PaginatedDTO(dramasResponseDTOS,drams.getTotalPages(),drams.getTotalElements());
-        }else{
-            throw new NotFoundException("dramas not found");
-        }
+            if (sortByRating != null && !sortByRating.trim().isEmpty() && sortByRating.equalsIgnoreCase("desc")) {
+                sort = Sort.by(Sort.Direction.DESC, "id");
+            }
+
+            Pageable pageable = PageRequest.of(page, size, sort);
+            Page<Drama> dramaList;
+
+            if (title == null || title.trim().isEmpty()) {
+                dramaList = dramaRepo.findAll(pageable);
+            } else {
+                dramaList = dramaRepo.findByTitleContainingIgnoreCase(title, pageable);
+            }
+
+            if (dramaList.hasContent()) {
+                List<DramasResponseDTO> dramasResponseDTOS = dramaList.stream()
+                        .map(d -> modelMapper.map(d, DramasResponseDTO.class))
+                        .collect(Collectors.toList());
+
+                return new PaginatedDTO(dramasResponseDTOS, dramaList.getTotalPages(), dramaList.getTotalElements());
+            } else {
+                throw new NotFoundException("Dramas not found");
+            }
     }
 
     //get drama with actor's details by drama id

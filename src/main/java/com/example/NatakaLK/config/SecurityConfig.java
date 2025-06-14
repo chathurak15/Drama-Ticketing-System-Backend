@@ -42,6 +42,7 @@ public class SecurityConfig {
                                 "/api/v1/drama/find/**",
                                 "/api/v1/show/all",
                                 "/api/v1/show/{id}",
+                                "api/v1/rating/**",
                                 "/api/v1/show/find/**",
                                 "/swagger-ui/index.html#",
                                 "/swagger-ui/**",

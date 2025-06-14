@@ -7,6 +7,8 @@ import com.example.NatakaLK.dto.responseDTO.LoginResponseDTO;
 import com.example.NatakaLK.service.JwtService;
 import com.example.NatakaLK.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,7 +30,19 @@ public class AuthController {
 
     @PostMapping("/login")
     private ResponseEntity<LoginResponseDTO> login(@RequestBody LoginDTO loginDTO) {
-        return ResponseEntity.ok(jwtService.createJwtToken(loginDTO));
+        LoginResponseDTO loginResponseDTO = jwtService.createJwtToken(loginDTO);
 
+        ResponseCookie cookie = ResponseCookie.from("JWT", loginResponseDTO.getToken())
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(1*60*60)
+                .sameSite("None")
+                .secure(true)
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(loginResponseDTO);
     }
 }

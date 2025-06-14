@@ -22,11 +22,16 @@ public class DramaController {
     private DramaService dramaService;
 
     @GetMapping("/all")
-    public ResponseEntity<?> getAllDrama(@RequestParam int page, @RequestParam  int size) {
+    public ResponseEntity<?> getAllDrama(
+            @RequestParam int page,
+            @RequestParam  int size,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String sortByRating) {
+
         if (size >50){
             return ResponseEntity.ok("Item size is too large! Maximum allowed is 50.");
         }
-        PaginatedDTO dramas = dramaService.getAll(page,size);
+        PaginatedDTO dramas = dramaService.getAll(page,size,title,sortByRating);
         return ResponseEntity.ok(dramas);
     }
 
@@ -59,14 +64,5 @@ public class DramaController {
             return ResponseEntity.ok(dramaService.updateDrama(dramaUpdateDTO));
         }
         return ResponseEntity.ok("Something went wrong");
-    }
-
-    @GetMapping("/find")
-    public ResponseEntity<?> searchDrama(
-            @RequestParam String title,@RequestParam int page, @RequestParam  int size) {
-        if (size >50){
-            return ResponseEntity.ok("Item size is too large! Maximum allowed is 50.");
-        }
-        return ResponseEntity.ok(dramaService.searchDramaByTitle(title,page,size));
     }
 }

@@ -28,6 +28,9 @@ public class User {
     private String status;
     private String image;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Show> shows;
+
+    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
+    private List<Rating> ratings;
 }

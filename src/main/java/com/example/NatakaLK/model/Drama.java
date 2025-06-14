@@ -42,6 +42,9 @@ public class Drama {
     private Set<Actor> actors;
 
     @OneToMany(mappedBy = "drama", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Show> shows = new ArrayList<>();
+    private List<Show> shows;
+
+    @OneToMany(mappedBy = "drama",fetch = FetchType.LAZY)
+    private List<Rating> ratings;
 
 }
