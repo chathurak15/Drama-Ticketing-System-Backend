@@ -44,7 +44,7 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
 
         // Set approval status
-        if ("User".equalsIgnoreCase(String.valueOf(registerDTO.getRole()))) {
+        if ("Customer".equalsIgnoreCase(String.valueOf(registerDTO.getRole()))) {
             user.setStatus("approved");
         } else {
             user.setStatus("pending");

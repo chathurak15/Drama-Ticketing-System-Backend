@@ -37,11 +37,16 @@ public class ShowController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> getAllShow(@RequestParam int page, @RequestParam  int size) {
+    public ResponseEntity<?> getAllShow(@RequestParam int page,
+                                        @RequestParam  int size,
+                                        @RequestParam(required = false) String title,
+                                        @RequestParam(required = false) String date,
+                                        @RequestParam(required = false) Integer city,
+                                        @RequestParam(required = false) String location) {
         if (size >50){
             return ResponseEntity.ok("Item size is too large! Maximum allowed is 50.");
         }
-        PaginatedDTO shows = showService.getAllByApproved(page,size);
+        PaginatedDTO shows = showService.getAllByApproved(page,size,title,date,city,location);
         return ResponseEntity.ok(shows);
     }
 

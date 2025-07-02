@@ -1,5 +1,6 @@
 package com.example.NatakaLK.repo;
 
+import com.example.NatakaLK.model.Actor;
 import com.example.NatakaLK.model.Drama;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,4 +23,5 @@ public interface DramaRepo extends JpaRepository<Drama, Integer> {
     @Query(value = "DELETE FROM drama_actor WHERE drama_id = :dramaId", nativeQuery = true)
     void deleteDramaActorsByDramaId(int dramaId);
 
+    boolean existsByActors(Actor actor);
 }

@@ -24,7 +24,6 @@ public class Actor {
 
     //used to persist only the date (not time) for the birthday field
     @Temporal(TemporalType.DATE)
-    @Column(nullable = false)
     private Date birthday;
 
     private String photo;

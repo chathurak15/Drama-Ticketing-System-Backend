@@ -42,14 +42,14 @@ public class UserContoller {
 
     //update User details
     @PutMapping("/update")
-    @PreAuthorize("hasAnyRole('Admin','User','Organizer','TheatreManager')")
+    @PreAuthorize("hasAnyRole('Admin','Customer','Organizer','TheatreManager')")
     public ResponseEntity<String> updateUser(@RequestBody RegisterDTO registerDTO) {
         return ResponseEntity.ok(userService.updateUser(registerDTO));
     }
 
     //get user by userid
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('Admin','User','Organizer','TheatreManager')")
+    @PreAuthorize("hasAnyRole('Admin','Customer','Organizer','TheatreManager')")
     public ResponseEntity<UserResponseDTO> getUser(@PathVariable int id) {
         if (id != 3){
             UserResponseDTO user = userService.getUserById(id);

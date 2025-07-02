@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/rating")
+@CrossOrigin
 public class RatingController {
     @Autowired
     private RatingService ratingService;
@@ -22,7 +23,7 @@ public class RatingController {
         return ResponseEntity.ok(ratingService.getAllRatingsByDrama(page,size,dramaId));
     }
 
-    @PreAuthorize("hasRole('User')")
+    @PreAuthorize("hasRole('Customer')")
     @PostMapping("/add")
     public ResponseEntity<String> submitRating(@RequestBody RatingDTO dto) {
         return ResponseEntity.ok( ratingService.submitRating(dto));

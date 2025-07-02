@@ -5,6 +5,7 @@ import com.example.NatakaLK.util.JwtUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,26 +28,38 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        final String authorizationHeader = request.getHeader("Authorization");
-
+        // Check Authorization header first
+        String authorizationHeader = request.getHeader("Authorization");
         String jwtToken = null;
         String username = null;
 
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+        // If no Authorization header, check cookies
+        if ((authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) && request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("JWT".equals(cookie.getName())) {
+                    jwtToken = cookie.getValue();
+                    break;
+                }
+            }
+        } else if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwtToken = authorizationHeader.substring(7);
+        }
+
+        if (jwtToken != null) {
             try {
                 username = jwtUtil.getUsernameFromToken(jwtToken);
-            }catch (IllegalArgumentException e) {
+            } catch (IllegalArgumentException e) {
                 handleUnauthorizedResponse(response, "Unable to parse JWT token");
                 return;
-            }catch (ExpiredJwtException e) {
+            } catch (ExpiredJwtException e) {
                 handleUnauthorizedResponse(response, "JWT token is expired");
                 return;
-            }catch (Exception e) {
+            } catch (Exception e) {
                 handleUnauthorizedResponse(response, "Invalid JWT token");
                 return;
             }
         }
+
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = jwtService.loadUserByUsername(username);
             if (jwtUtil.validateToken(jwtToken, userDetails)) {

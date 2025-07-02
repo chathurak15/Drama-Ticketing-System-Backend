@@ -2,9 +2,11 @@ package com.example.NatakaLK.service;
 
 import com.example.NatakaLK.dto.requestDTO.SaveShowDTO;
 import com.example.NatakaLK.dto.requestDTO.UpdateShowDTO;
+import com.example.NatakaLK.dto.responseDTO.CityDTO;
 import com.example.NatakaLK.dto.responseDTO.PaginatedDTO;
 import com.example.NatakaLK.dto.responseDTO.ShowResponseDTO;
 import com.example.NatakaLK.exception.NotFoundException;
+import com.example.NatakaLK.model.City;
 import com.example.NatakaLK.model.Drama;
 import com.example.NatakaLK.model.Show;
 import com.example.NatakaLK.model.User;
@@ -19,6 +21,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -70,17 +75,37 @@ public class ShowService {
         return "Show added successfully";
     }
 
-    public PaginatedDTO getAllByApproved(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "showDate"));
-        Page<Show> shows = showRepo.findAllEqualsStatus(pageable, "approved");
-        if (shows.hasContent()){
-            List<ShowResponseDTO> showResponseDTOS = shows.getContent()
-                    .stream().map(d -> modelMapper.map(d, ShowResponseDTO.class))
-                    .collect(Collectors.toList());
+//    public PaginatedDTO getAllByApproved(int page, int size, String title, String date, int id) {
+//        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "showDate"));
+//        Page<Show> shows = showRepo.findAllEqualsStatus(pageable, "approved");
+//        if (shows.hasContent()){
+//            List<ShowResponseDTO> showResponseDTOS = shows.getContent()
+//                    .stream().map(d -> modelMapper.map(d, ShowResponseDTO.class))
+//                    .collect(Collectors.toList());
+//
+//            return new PaginatedDTO(showResponseDTOS,shows.getTotalPages(),shows.getTotalElements());
+//        }else{
+//            throw new NotFoundException("dramas not found");
+//        }
+//    }
 
-            return new PaginatedDTO(showResponseDTOS,shows.getTotalPages(),shows.getTotalElements());
-        }else{
-            throw new NotFoundException("dramas not found");
+    public PaginatedDTO getAllByApproved(int page, int size, String title, String date, Integer cityId, String location) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "showDate"));
+
+        LocalDate parsedDate = null;
+        if (date != null && !date.isEmpty()) {
+            parsedDate = LocalDate.parse(date);
+        }
+
+        Page<Show> shows = showRepo.findApprovedShowsWithFilters(pageable, title, parsedDate, cityId,location);
+
+        if (shows.hasContent()) {
+            List<ShowResponseDTO> dtos = shows.getContent().stream()
+                    .map(show -> modelMapper.map(show, ShowResponseDTO.class))
+                    .collect(Collectors.toList());
+            return new PaginatedDTO(dtos, shows.getTotalPages(), shows.getTotalElements());
+        } else {
+            throw new NotFoundException("Shows not found");
         }
     }
 
@@ -168,5 +193,9 @@ public class ShowService {
         }else {
             throw new NotFoundException("Show not found");
         }
+    }
+
+    public List<String> getSortedUniqueLocationsByCityId(int cityId) {
+        return showRepo.getDistinctLocationsByCity(cityId);
     }
 }

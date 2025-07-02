@@ -4,8 +4,10 @@ package com.example.NatakaLK.controller;
 import com.example.NatakaLK.dto.requestDTO.LoginDTO;
 import com.example.NatakaLK.dto.requestDTO.RegisterDTO;
 import com.example.NatakaLK.dto.responseDTO.LoginResponseDTO;
+import com.example.NatakaLK.dto.responseDTO.UserResponseDTO;
 import com.example.NatakaLK.service.JwtService;
 import com.example.NatakaLK.service.UserService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -29,20 +31,34 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    private ResponseEntity<LoginResponseDTO> login(@RequestBody LoginDTO loginDTO) {
+    private ResponseEntity<UserResponseDTO> login(@RequestBody LoginDTO loginDTO) {
         LoginResponseDTO loginResponseDTO = jwtService.createJwtToken(loginDTO);
 
         ResponseCookie cookie = ResponseCookie.from("JWT", loginResponseDTO.getToken())
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
-                .maxAge(1*60*60)
+                .maxAge(2*60*60)
                 .sameSite("None")
                 .secure(true)
                 .build();
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(loginResponseDTO);
+                .body(loginResponseDTO.getUser());
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        ResponseCookie cookie = ResponseCookie.from("JWT", "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(0) // <- Clears cookie
+                .sameSite("None")
+                .build();
+
+        response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        return ResponseEntity.noContent().build();
     }
 }

@@ -33,6 +33,8 @@ public class DramaService {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    private RatingService ratingService;
     //add drama
     public String addDrama(DramaRequestDTO dramaDTO) {
         if (dramaDTO ==null) {
@@ -74,7 +76,11 @@ public class DramaService {
 
             if (dramaList.hasContent()) {
                 List<DramasResponseDTO> dramasResponseDTOS = dramaList.stream()
-                        .map(d -> modelMapper.map(d, DramasResponseDTO.class))
+                        .map(d -> {
+                            DramasResponseDTO dto = modelMapper.map(d, DramasResponseDTO.class);
+                            dto.setRating(ratingService.getAverageRating(d.getId()));
+                            return dto;
+                        })
                         .collect(Collectors.toList());
 
                 return new PaginatedDTO(dramasResponseDTOS, dramaList.getTotalPages(), dramaList.getTotalElements());
@@ -95,7 +101,7 @@ public class DramaService {
             }
             List<ActorResponseDTO> actorResponseDTOS = actors.stream()
                     .map(actor -> modelMapper.map(actor, ActorResponseDTO.class)).collect(Collectors.toList());
-
+            
             return new DramaDTO(
                     drama.getId(),
                     drama.getTitle(),
@@ -103,7 +109,8 @@ public class DramaService {
                     drama.getDuration(),
                     drama.getVideoUrl(),
                     drama.getImage(),
-                    actorResponseDTOS);
+                    actorResponseDTOS,
+                    ratingService.getAverageRating(id));
         }else {
             throw new NotFoundException(id+"drama not found");
         }

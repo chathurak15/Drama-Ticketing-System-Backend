@@ -17,4 +17,5 @@ public class DramaDTO {
     private String videoUrl;
     private String image;
     private List<ActorResponseDTO> Actors;
+    private double rating;
 }

@@ -1,5 +1,6 @@
 package com.example.NatakaLK.dto.responseDTO;
 
+import com.example.NatakaLK.model.City;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,4 +21,5 @@ public class ShowResponseDTO {
     private DramasResponseDTO drama;
     private String status;
     private UserResponseDTO user;
+    private CityDTO city;
 }

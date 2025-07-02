@@ -55,7 +55,9 @@ public class RatingService {
     }
 
     public Double getAverageRating(int dramaId) {
-        return ratingRepo.findAverageRatingByDramaId(dramaId);
+        Double avg = ratingRepo.findAverageRatingByDramaId(dramaId);
+        Double averageRating = (avg != null) ? avg : 5.0;
+        return averageRating;
     }
 
     public PaginatedDTO getAllRatingsByDrama(int page, int size, int dramaId) {

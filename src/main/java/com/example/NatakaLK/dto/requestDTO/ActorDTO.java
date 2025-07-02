@@ -17,7 +17,7 @@ public class ActorDTO {
     @Pattern(regexp = "Male|Female|Other", message = "Gender must be Male, Female, or Other")
     private String gender;
 
-    @NotBlank(message = "Birthday is required")
+//    @NotBlank(message = "Birthday is required")
     @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "Birthday must be in format YYYY-MM-DD")
     private String birthday;
 

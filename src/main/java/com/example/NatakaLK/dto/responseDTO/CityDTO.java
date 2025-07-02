@@ -1,4 +1,5 @@
 package com.example.NatakaLK.dto.responseDTO;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -6,12 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DramasResponseDTO {
+public class CityDTO {
     private int id;
-    private String title;
-    private String description;
-    private int duration;
-    private String videoUrl;
-    private String image;
-    private double rating;
+    private String cityName;
+
 }

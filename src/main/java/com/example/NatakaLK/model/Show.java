@@ -30,6 +30,10 @@ public class Show {
     @Column(nullable = false)
     private String location;
 
+    @ManyToOne
+    @JoinColumn(name = "city_id", nullable = false)
+    private City city;
+
     @Column(nullable = false)
     @Temporal(TemporalType.DATE)
     private Date showDate;
@@ -50,6 +54,10 @@ public class Show {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+//    @ManyToOne
+//    @JoinColumn(name = "theatre_id", nullable = false)
+//    private Theatre theatre;
 
     @PrePersist
     protected void onCreate() {
