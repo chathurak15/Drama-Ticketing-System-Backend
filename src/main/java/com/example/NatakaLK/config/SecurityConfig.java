@@ -55,6 +55,8 @@ public class SecurityConfig {
                                 "/api/v1/rating/**",
                                 "/api/v1/rating/getByDrama",
                                 "/api/v1/show/find/**",
+                                "/api/v1/seat/seat-plan/{showId}",
+                                "/api/v1/seat/unavailable-seats/{showId}",
                                 "/swagger-ui/index.html#",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",

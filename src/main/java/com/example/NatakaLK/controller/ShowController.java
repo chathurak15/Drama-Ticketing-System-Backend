@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("api/v1/show")
 @CrossOrigin
@@ -42,11 +44,12 @@ public class ShowController {
                                         @RequestParam(required = false) String title,
                                         @RequestParam(required = false) String date,
                                         @RequestParam(required = false) Integer city,
-                                        @RequestParam(required = false) String location) {
+                                        @RequestParam(required = false) String location,
+                                        @RequestParam(required = false) Integer dramaId) {
         if (size >50){
             return ResponseEntity.ok("Item size is too large! Maximum allowed is 50.");
         }
-        PaginatedDTO shows = showService.getAllByApproved(page,size,title,date,city,location);
+        PaginatedDTO shows = showService.getAllByApproved(page,size,title,date,city,location,dramaId);
         return ResponseEntity.ok(shows);
     }
 
@@ -83,13 +86,26 @@ public class ShowController {
         return ResponseEntity.ok(showService.updateShowStatus(id,status));
     }
 
+    @GetMapping("/all/user")
+    @PreAuthorize("hasAnyRole('Admin','Organizer','TheatreManager')")
+    public ResponseEntity<?> getAllShowByUser(
+                                        @RequestParam int page,
+                                        @RequestParam  int size,
+                                        @RequestParam(required = false) String title,
+                                        @RequestParam Integer userId, @RequestParam(required = false) String status) {
+        if (size >50){
+            return ResponseEntity.ok("Item size is too large! Maximum allowed is 50.");
+        }
+        PaginatedDTO shows = showService.getAllByUserId(page,size,title,userId,status);
+        return ResponseEntity.ok(shows);
+    }
 
-//    @GetMapping("/find")
-//    public ResponseEntity<?> searchShow(
-//            @RequestParam String title,@RequestParam int page, @RequestParam  int size) {
-//        if (size >50){
-//            return ResponseEntity.ok("Item size is too large! Maximum allowed is 50.");
-//        }
-//        return ResponseEntity.ok(dramaService.searchDramaByTitle(title,page,size));
-//    }
+
+    @GetMapping("/get-shows-by-drama-id")
+    public ResponseEntity<?> getShowsByDramaId(@RequestParam int page, @RequestParam  int size,@RequestParam int dramaId) {
+        if (size >50){
+            return ResponseEntity.ok("Item size is too large! Maximum allowed is 50.");
+        }
+        return ResponseEntity.ok(showService.getShowsByDramaId(dramaId,page,size));
+    }
 }

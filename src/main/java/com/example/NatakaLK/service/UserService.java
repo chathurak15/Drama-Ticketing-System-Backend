@@ -12,6 +12,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -119,6 +122,15 @@ public class UserService {
         return modelMapper.map(user,UserResponseDTO.class);
     }
 
+    public UserResponseDTO loadUserByUsername(String email) {
+        User user = userRepo.findByEmail(email);
+        if (user == null) {
+            throw new NotFoundException("User not found");
+        } else {
+            return modelMapper.map(user,UserResponseDTO.class);
+        }
+    }
+
     public String deleteUser(int id) {
         if (!userRepo.existsById(id) || id==6) {
             return "User not found";
@@ -126,4 +138,6 @@ public class UserService {
         userRepo.deleteById(id);
         return "User deleted successfully";
     }
+
+
 }

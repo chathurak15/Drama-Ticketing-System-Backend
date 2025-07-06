@@ -1,6 +1,4 @@
 package com.example.NatakaLK.controller;
-
-
 import com.example.NatakaLK.dto.requestDTO.LoginDTO;
 import com.example.NatakaLK.dto.requestDTO.RegisterDTO;
 import com.example.NatakaLK.dto.responseDTO.LoginResponseDTO;
@@ -54,11 +52,12 @@ public class AuthController {
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
-                .maxAge(0) // <- Clears cookie
+                .maxAge(0)
                 .sameSite("None")
                 .build();
 
         response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
         return ResponseEntity.noContent().build();
     }
+
 }

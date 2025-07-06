@@ -1,18 +1,15 @@
 package com.example.NatakaLK.service;
 
 import com.example.NatakaLK.dto.requestDTO.SaveShowDTO;
+import com.example.NatakaLK.dto.requestDTO.ShowPricingDTO;
 import com.example.NatakaLK.dto.requestDTO.UpdateShowDTO;
 import com.example.NatakaLK.dto.responseDTO.CityDTO;
 import com.example.NatakaLK.dto.responseDTO.PaginatedDTO;
 import com.example.NatakaLK.dto.responseDTO.ShowResponseDTO;
+import com.example.NatakaLK.dto.responseDTO.TheatreResponseDTO;
 import com.example.NatakaLK.exception.NotFoundException;
-import com.example.NatakaLK.model.City;
-import com.example.NatakaLK.model.Drama;
-import com.example.NatakaLK.model.Show;
-import com.example.NatakaLK.model.User;
-import com.example.NatakaLK.repo.DramaRepo;
-import com.example.NatakaLK.repo.ShowRepo;
-import com.example.NatakaLK.repo.UserRepo;
+import com.example.NatakaLK.model.*;
+import com.example.NatakaLK.repo.*;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +35,22 @@ public class ShowService {
     private DramaRepo dramaRepo;
 
     @Autowired
+    private ShowPricingRepo showPricingRepo;
+
+    @Autowired
+    private SeatTypeRepo seatTypeRepo;
+
+    @Autowired
+    private TheatreRepo theatreRepo;
+
+    @Autowired
     private UserRepo userRepo;
+
+    @Autowired
+    private TheatreService theatreService;
+
+    @Autowired
+    private CityRepo cityRepo;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -46,6 +58,7 @@ public class ShowService {
     public String addShow(SaveShowDTO saveShowDTO) {
         Optional<User> userOpt = userRepo.findById(saveShowDTO.getUserId());
         Optional<Drama> dramaOpt = dramaRepo.findById(saveShowDTO.getDramaId());
+        Optional<City> cityOpt = cityRepo.findById(saveShowDTO.getCityId());
 
         if (userOpt.isEmpty()) {
             return "User not found";
@@ -53,9 +66,13 @@ public class ShowService {
         if (dramaOpt.isEmpty()) {
             return "Drama not found";
         }
+        if (cityOpt.isEmpty()) {
+            return "City not found";
+        }
 
         User user = userOpt.get();
         Drama drama = dramaOpt.get();
+        City city = cityOpt.get();
         if (!"approved".equalsIgnoreCase(user.getStatus())) {
             return "Your account is not approved";
         }
@@ -69,27 +86,45 @@ public class ShowService {
         newShow.setShowTime(saveShowDTO.getShowTime());
         newShow.setDrama(drama);
         newShow.setUser(user);
+        newShow.setCity(city);
         newShow.setStatus("pending");
 
-        showRepo.save(newShow);
+        if (saveShowDTO.getTheaterId() != null) {
+            Theatre theatre = theatreRepo.findById(saveShowDTO.getTheaterId())
+                    .orElseThrow(() -> new NotFoundException("Theater not found"));
+            newShow.setTheatre(theatre);
+        }
+
+        newShow = showRepo.save(newShow);
+
+        // Create temporary theater if provided
+        if (saveShowDTO.getTemporaryTheatre() != null) {
+            TheatreResponseDTO tempTheatre = theatreService.createTemporaryTheatre(
+                    saveShowDTO.getTemporaryTheatre(), user.getId(), newShow.getShowId());
+            Theatre theatre = theatreRepo.findById(tempTheatre.getId()).get();
+            newShow.setTheatre(theatre);
+            newShow = showRepo.save(newShow);
+        }
+
+        // Create pricing
+        if (saveShowDTO.getPricing() != null) {
+            for (ShowPricingDTO pricingReq : saveShowDTO.getPricing()) {
+                ShowPricing pricing = new ShowPricing();
+                pricing.setShow(newShow);
+                pricing.setPrice(pricingReq.getPrice());
+
+                if (pricingReq.getSeatTypeId() != null) {
+                    SeatType seatType = seatTypeRepo.findById(pricingReq.getSeatTypeId())
+                            .orElseThrow(() -> new RuntimeException("Seat type not found"));
+                    pricing.setSeatType(seatType);
+                }
+                showPricingRepo.save(pricing);
+            }
+        }
         return "Show added successfully";
     }
 
-//    public PaginatedDTO getAllByApproved(int page, int size, String title, String date, int id) {
-//        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "showDate"));
-//        Page<Show> shows = showRepo.findAllEqualsStatus(pageable, "approved");
-//        if (shows.hasContent()){
-//            List<ShowResponseDTO> showResponseDTOS = shows.getContent()
-//                    .stream().map(d -> modelMapper.map(d, ShowResponseDTO.class))
-//                    .collect(Collectors.toList());
-//
-//            return new PaginatedDTO(showResponseDTOS,shows.getTotalPages(),shows.getTotalElements());
-//        }else{
-//            throw new NotFoundException("dramas not found");
-//        }
-//    }
-
-    public PaginatedDTO getAllByApproved(int page, int size, String title, String date, Integer cityId, String location) {
+    public PaginatedDTO getAllByApproved(int page, int size, String title, String date, Integer cityId, String location,Integer dramaId) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "showDate"));
 
         LocalDate parsedDate = null;
@@ -97,7 +132,7 @@ public class ShowService {
             parsedDate = LocalDate.parse(date);
         }
 
-        Page<Show> shows = showRepo.findApprovedShowsWithFilters(pageable, title, parsedDate, cityId,location);
+        Page<Show> shows = showRepo.findApprovedShowsWithFilters(pageable, title, parsedDate, cityId,location,dramaId);
 
         if (shows.hasContent()) {
             List<ShowResponseDTO> dtos = shows.getContent().stream()
@@ -197,5 +232,35 @@ public class ShowService {
 
     public List<String> getSortedUniqueLocationsByCityId(int cityId) {
         return showRepo.getDistinctLocationsByCity(cityId);
+    }
+
+    public PaginatedDTO getAllByUserId(int page, int size, String title, int userId, String status) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "showId"));
+
+        Page<Show> shows = showRepo.findUserShowsWithFilters(pageable, title, status, userId);
+
+        if (shows.hasContent()) {
+            List<ShowResponseDTO> dtos = shows.getContent().stream()
+                    .map(show -> modelMapper.map(show, ShowResponseDTO.class))
+                    .collect(Collectors.toList());
+            return new PaginatedDTO(dtos, shows.getTotalPages(), shows.getTotalElements());
+        } else {
+            throw new NotFoundException("Shows not found");
+        }
+    }
+
+    public PaginatedDTO getShowsByDramaId(int dramaId, int page, int size) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "showDate"));
+        Page<Show> shows =  showRepo.findAllByDramaId(pageable,dramaId);
+
+        if (shows.hasContent()) {
+            List<ShowResponseDTO> dtos = shows.getContent().stream()
+                    .map(show -> modelMapper.map(show, ShowResponseDTO.class))
+                    .collect(Collectors.toList());
+            return new PaginatedDTO(dtos, shows.getTotalPages(), shows.getTotalElements());
+        } else {
+            throw new NotFoundException("Shows not found");
+        }
     }
 }

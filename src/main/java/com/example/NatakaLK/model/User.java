@@ -17,7 +17,7 @@ import java.util.List;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
     private String fname;
     private String lname;
     private String email;
@@ -33,4 +33,10 @@ public class User {
 
     @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
     private List<Rating> ratings;
+
+    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
+    private List<LockedSeat> lockedSeats;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Booking> bookings;
 }

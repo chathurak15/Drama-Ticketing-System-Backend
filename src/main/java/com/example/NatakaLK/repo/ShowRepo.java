@@ -22,15 +22,29 @@ public interface ShowRepo extends JpaRepository<Show, Integer> {
             "AND (:title IS NULL OR LOWER(s.title) LIKE LOWER(CONCAT('%', :title, '%'))) " +
             "AND (:date IS NULL OR s.showDate = :date) " +
             "AND (:cityId IS NULL OR s.city.id = :cityId) " +
-            "AND (:location IS NULL OR LOWER(s.location) LIKE LOWER(CONCAT('%', :location, '%')))")
+            "AND (:location IS NULL OR LOWER(s.location) LIKE LOWER(CONCAT('%', :location, '%'))) " +
+            "AND (:dramaId IS NULL OR s.drama.id = :dramaId)")
     Page<Show> findApprovedShowsWithFilters(
             Pageable pageable,
             @Param("title") String title,
             @Param("date") LocalDate date,
             @Param("cityId") Integer cityId,
-            @Param("location") String location);
+            @Param("location") String location,
+            @Param("dramaId") Integer dramaId);
 
 
     @Query("SELECT DISTINCT s.location FROM Show s WHERE s.city.id = :cityId ORDER BY s.showDate ASC")
     List<String> getDistinctLocationsByCity(@Param("cityId") int cityId);
+
+    @Query("SELECT s FROM Show s " +
+            "WHERE s.user.id = :userId " +
+            "AND (:title IS NULL OR LOWER(s.title) LIKE LOWER(CONCAT('%', :title, '%'))) " +
+            "AND (:status IS NULL OR LOWER(s.status) = LOWER(:status))")
+    Page<Show> findUserShowsWithFilters(
+            Pageable pageable,
+            @Param("title") String title,
+            @Param("status") String status,
+            @Param("userId") Integer userId);
+
+    Page<Show> findAllByDramaId(Pageable pageable, int dramaId);
 }

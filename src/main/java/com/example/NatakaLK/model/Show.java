@@ -4,8 +4,10 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -15,7 +17,7 @@ import java.util.Date;
 public class Show {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int showId;
+    private Integer showId;
 
     @Column(nullable = false)
     private String title;
@@ -32,6 +34,7 @@ public class Show {
 
     @ManyToOne
     @JoinColumn(name = "city_id", nullable = false)
+    @ToString.Exclude
     private City city;
 
     @Column(nullable = false)
@@ -49,15 +52,26 @@ public class Show {
 
     @ManyToOne
     @JoinColumn(name = "drama_id", nullable = false)
+    @ToString.Exclude
     private Drama drama;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @ToString.Exclude
     private User user;
 
-//    @ManyToOne
-//    @JoinColumn(name = "theatre_id", nullable = false)
-//    private Theatre theatre;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "theatre_id")
+    private Theatre theatre;
+
+    @OneToMany(mappedBy = "show", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ShowPricing> showPricings;
+
+    @OneToMany(mappedBy = "show", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<LockedSeat> lockSeats;
+
+    @OneToMany(mappedBy = "show", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Booking> bookings;
 
     @PrePersist
     protected void onCreate() {

@@ -4,13 +4,14 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.List;
 
+@Data
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 public class City {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,5 +21,6 @@ public class City {
     private String cityName;
 
     @OneToMany(mappedBy = "city",fetch = FetchType.LAZY)
+    @ToString.Exclude
     private List<Show> shows;
 }

@@ -7,6 +7,8 @@ import com.example.NatakaLK.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -63,5 +65,13 @@ public class UserContoller {
     @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<String> deleteUser(@PathVariable int id) {
             return ResponseEntity.ok(userService.deleteUser(id));
+    }
+
+    @GetMapping("/me")
+    @PreAuthorize("hasAnyRole('Admin','Organizer','TheatreManager','Customer')")
+    public ResponseEntity<UserResponseDTO> getCurrentUserInfo(Authentication auth) {
+        UserDetails userDetails = (UserDetails) auth.getPrincipal();
+        UserResponseDTO userResponseDTO = userService.loadUserByUsername(userDetails.getUsername());
+        return ResponseEntity.ok(userResponseDTO);
     }
 }
