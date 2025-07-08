@@ -1,5 +1,6 @@
 package com.example.NatakaLK.controller;
 
+import com.example.NatakaLK.dto.requestDTO.UserUpdateDTO;
 import com.example.NatakaLK.dto.responseDTO.PaginatedDTO;
 import com.example.NatakaLK.dto.requestDTO.RegisterDTO;
 import com.example.NatakaLK.dto.responseDTO.UserResponseDTO;
@@ -45,8 +46,8 @@ public class UserContoller {
     //update User details
     @PutMapping("/update")
     @PreAuthorize("hasAnyRole('Admin','Customer','Organizer','TheatreManager')")
-    public ResponseEntity<String> updateUser(@RequestBody RegisterDTO registerDTO) {
-        return ResponseEntity.ok(userService.updateUser(registerDTO));
+    public ResponseEntity<String> updateUser(@RequestBody UserUpdateDTO userUpdateDTO) {
+        return ResponseEntity.ok(userService.updateUser(userUpdateDTO));
     }
 
     //get user by userid

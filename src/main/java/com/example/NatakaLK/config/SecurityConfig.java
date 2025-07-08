@@ -42,6 +42,7 @@ public class SecurityConfig {
                 .sessionManagement(s->s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->authorizationManagerRequestMatcherRegistry
                         .requestMatchers(
+                                "api/v1/mail/send",
                                 "/api/v1/auth/login",
                                 "/api/v1/auth/register",
                                 "/api/v1/drama/all",
@@ -57,6 +58,7 @@ public class SecurityConfig {
                                 "/api/v1/show/find/**",
                                 "/api/v1/seat/seat-plan/{showId}",
                                 "/api/v1/seat/unavailable-seats/{showId}",
+                                "/uploads/**",
                                 "/swagger-ui/index.html#",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",

@@ -1,5 +1,6 @@
 package com.example.NatakaLK.service;
 
+import com.example.NatakaLK.dto.requestDTO.UserUpdateDTO;
 import com.example.NatakaLK.dto.responseDTO.PaginatedDTO;
 import com.example.NatakaLK.dto.requestDTO.RegisterDTO;
 import com.example.NatakaLK.dto.responseDTO.UserResponseDTO;
@@ -32,6 +33,9 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private EmailService emailService;
+
     public String registerUser(RegisterDTO registerDTO){
 
         if ("Admin".equalsIgnoreCase(String.valueOf(registerDTO.getRole()))) {
@@ -54,6 +58,7 @@ public class UserService {
         }
         try {
             userRepo.save(user);
+            emailService.sendWelcomeEmail(user.getEmail(), user.getFname(), user.getLname());
             return "User registered successfully";
         } catch (Exception e) {
             return "Registration failed: " + e.getMessage();
@@ -95,17 +100,16 @@ public class UserService {
         }
     }
 
-    public String updateUser(RegisterDTO registerDTO) {
+    public String updateUser(UserUpdateDTO userUpdateDTO) {
             // Find existing user by email
-        User user = userRepo.findByEmail(registerDTO.getEmail());
+        User user = userRepo.findByEmail(userUpdateDTO.getEmail());
         if (user == null) {
-            return  "User with email " + registerDTO.getEmail() + " not found";
+            return  "User with email " + userUpdateDTO.getEmail() + " not found";
         }
-        user.setFname(registerDTO.getFname());
-        user.setLname(registerDTO.getLname());
-        user.setPhoneNumber(registerDTO.getPhoneNumber());
-        user.setImage(registerDTO.getImage());
-        user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
+        user.setFname(userUpdateDTO.getFname());
+        user.setLname(userUpdateDTO.getLname());
+        user.setPhoneNumber(userUpdateDTO.getPhoneNumber());
+        user.setImage(userUpdateDTO.getImage());
         userRepo.save(user);
         return "User updated successfully";
     }

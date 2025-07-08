@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Nataka.lk</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: #ffffff;
+            line-height: 1.6;
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #1a1a1a;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(45deg, #661F19, #8B2F29);
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="20" cy="20" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="30" r="1.5" fill="rgba(255,255,255,0.1)"/><circle cx="30" cy="80" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="70" cy="70" r="2" fill="rgba(255,255,255,0.1)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .logo {
+            font-size: 36px;
+            font-weight: bold;
+            color: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo::after {
+            content: '🎭';
+            margin-left: 10px;
+            font-size: 32px;
+            display: inline-block;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .tagline {
+            font-size: 16px;
+            color: #f0f0f0;
+            margin: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .content {
+            padding: 40px 30px;
+            background: #1a1a1a;
+        }
+
+        .welcome-message {
+            font-size: 28px;
+            color: #661F19;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+
+        .user-name {
+            color: #ffffff;
+            background: linear-gradient(45deg, #661F19, #8B2F29);
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            box-shadow: 0 3px 10px rgba(102, 31, 25, 0.3);
+        }
+
+        .message-body {
+            font-size: 16px;
+            color: #e0e0e0;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .features {
+            background: #2d2d2d;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+            border-left: 4px solid #661F19;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 15px;
+        }
+        .feature-item span {
+            color: white;
+        }
+
+
+        .feature-icon {
+            width: 20px;
+            height: 20px;
+            background: #661F19;
+            border-radius: 50%;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #661F19, #8B2F29);
+            color: #ffffff;
+            padding: 15px 35px;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 16px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(102, 31, 25, 0.4);
+            transition: all 0.3s ease;
+            margin: 20px 0;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 31, 25, 0.6);
+        }
+
+        .footer {
+            background: #0f0f0f;
+            padding: 30px;
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+        }
+
+        .social-links {
+            margin: 20px 0;
+        }
+
+        .social-links a {
+            color: #661F19;
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 16px;
+        }
+
+        .divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #661F19, transparent);
+            margin: 30px 0;
+        }
+
+        @media (max-width: 600px) {
+            .email-container {
+                margin: 0 10px;
+            }
+
+            .header, .content {
+                padding: 30px 20px;
+            }
+
+            .logo {
+                font-size: 28px;
+            }
+
+            .welcome-message {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="email-container">
+    <div class="header">
+        <div class="logo">Nataka.lk</div>
+        <p class="tagline">Where Stories Come to Life</p>
+    </div>
+
+    <div class="content">
+        <h2 class="welcome-message">
+            Welcome to the Grand Stage, <span class="user-name" th:text="${name}">Master of the Drama</span>!
+        </h2>
+
+        <p class="message-body">
+            Thank you for joining the Nataka.lk community! We're thrilled to have you as part of Sri Lanka's premier stage drama platform. Get ready to embark on an extraordinary journey through the world of theater.
+        </p>
+
+        <div class="divider"></div>
+
+        <div class="features">
+            <h3 style="color: #661F19; margin-top: 0;">What awaits you:</h3>
+            <div class="feature-item">
+                <div class="feature-icon">🎭</div>
+                <span>Exclusive access to upcoming drama productions</span>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">🎟️</div>
+                <span>Early bird booking for popular shows</span>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">📚</div>
+                <span>Behind-the-scenes content and artist interviews</span>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">🌟</div>
+                <span>Special discounts and member-only events</span>
+            </div>
+        </div>
+
+        <div style="text-align: center;">
+            <a href="#" class="cta-button">Explore Current Shows</a>
+        </div>
+
+        <div class="divider"></div>
+
+        <p style="text-align: center; color: #ccc; font-style: italic;">
+            "Theater is the art of looking at ourselves" - Join us in celebrating the magic of Sri Lankan stage drama!
+        </p>
+    </div>
+
+    <div class="footer">
+        <div class="social-links">
+            <a href="#">Facebook</a>
+            <a href="#">Instagram</a>
+            <a href="#">Twitter</a>
+            <a href="#">YouTube</a>
+        </div>
+
+        <p>© 2025 Nataka.lk - Sri Lanka's Stage Drama Hub</p>
+        <p>
+            <a href="#" style="color: #661F19;">Unsubscribe</a> |
+            <a href="#" style="color: #661F19;">Privacy Policy</a> |
+            <a href="#" style="color: #661F19;">Contact Us</a>
+        </p>
+    </div>
+</div>
+</body>
+</html>

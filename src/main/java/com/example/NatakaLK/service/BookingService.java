@@ -2,10 +2,12 @@ package com.example.NatakaLK.service;
 
 import com.example.NatakaLK.dto.requestDTO.BookingRequestDTO;
 import com.example.NatakaLK.dto.requestDTO.SeatBookingInfo;
+import com.example.NatakaLK.dto.responseDTO.BookingResponseDTO;
 import com.example.NatakaLK.exception.NotFoundException;
 import com.example.NatakaLK.model.*;
 import com.example.NatakaLK.repo.*;
 import jakarta.transaction.Transactional;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,9 +29,12 @@ public class BookingService {
     private UserRepo userRepo;
     @Autowired
     private LockedSeatRepo lockedSeatRepo;
-
+    @Autowired
+    private ModelMapper modelMapper;
     @Autowired
     private BookedSeatRepo bookedSeatRepo;
+    @Autowired
+    private EmailService emailService;
 
     public String addBooking(BookingRequestDTO reqDTO) {
         Show show = showRepo.findById(reqDTO.getShowId())
@@ -68,7 +73,7 @@ public class BookingService {
         booking.setBookingDate(LocalDateTime.now());
         booking.setTheatre(show.getTheatre());
         booking.setTicketId("0");
-        booking.setStatus("Complete");
+        booking.setStatus("Confirmed");
         booking.setSeatCount(seats.size());
         bookingRepo.save(booking);
         booking.setTicketId(generateTicketId(show.getTheatre(), show, seatsId, booking.getId()));
@@ -91,6 +96,7 @@ public class BookingService {
                 lockedSeatRepo.save(lockedSeat);
             }
         }
+        emailService.sendTicketEmail(user.getEmail(),getBookingByTicketId(booking.getTicketId()));
         return booking.getTicketId();
     }
 
@@ -104,7 +110,7 @@ public class BookingService {
         return prefix + "-" + showIdPart + "-" + firstSeatPart + "-" + bookingPart;
     }
 
-    public String cancelBooking(Integer bookingId, int userId) {
+    public String cancelBooking(int bookingId, int userId) {
         User user = userRepo.findById(userId).orElseThrow(() -> new IllegalStateException("User not found"));
 
         if (bookingRepo.findById(bookingId).isPresent()){
@@ -125,10 +131,62 @@ public class BookingService {
                     bookedSeatRepo.save(bookedSeat);
                 }
             }
-
         }else {
             throw new NotFoundException("Booking not found");
         }
         return "Booking cancelled Successfully";
+    }
+
+    public BookingResponseDTO getBookingByTicketId(String tickectId) {
+        Booking booking = bookingRepo.findByTicketId(tickectId);
+        if (booking == null) {
+            throw new NotFoundException("Booking not found");
+        }
+
+        BookingResponseDTO bookingResponseDTO = modelMapper.map(booking, BookingResponseDTO.class);
+        bookingResponseDTO.setTheatreName(booking.getTheatre().getName());
+        bookingResponseDTO.setShowId(booking.getShow().getShowId());
+        bookingResponseDTO.setShowTitle(booking.getShow().getTitle());
+        bookingResponseDTO.setShowTime(booking.getShow().getShowTime());
+        bookingResponseDTO.setShowDate(booking.getShow().getShowDate());
+        bookingResponseDTO.setLocation(booking.getShow().getLocation());
+
+        List<BookedSeat> bookedSeats = bookedSeatRepo.findAllByBooking_Id(booking.getId());
+        List<SeatBookingInfo> seatBookingInfos = new ArrayList<>();
+        for (BookedSeat bookedSeat : bookedSeats) {
+            SeatBookingInfo seatBookingInfo = new SeatBookingInfo();
+            seatBookingInfo.setSeatIdentifier(bookedSeat.getSeatId());
+            seatBookingInfo.setPrice(bookedSeat.getPrice());
+
+            seatBookingInfos.add(seatBookingInfo);
+        }
+
+        bookingResponseDTO.setSeats(seatBookingInfos);
+        return bookingResponseDTO;
+    }
+
+    public List<BookingResponseDTO> getAllBookingByUser(int userId) {
+        List<Booking> bookings = bookingRepo.findAllByUserId(userId);
+        List<BookingResponseDTO> bookingResponseDTOs = new ArrayList<>();
+
+        for (Booking booking : bookings) {
+            BookingResponseDTO bookingResponseDTO = modelMapper.map(booking, BookingResponseDTO.class);
+            bookingResponseDTO.setTheatreName(booking.getTheatre().getName());
+            bookingResponseDTO.setShowId(booking.getShow().getShowId());
+
+            List<BookedSeat> bookedSeats = bookedSeatRepo.findAllByBooking_Id(booking.getId());
+            List<SeatBookingInfo> seatBookingInfos = new ArrayList<>();
+            for (BookedSeat bookedSeat : bookedSeats) {
+                SeatBookingInfo seatBookingInfo = new SeatBookingInfo();
+                seatBookingInfo.setSeatIdentifier(bookedSeat.getSeatId());
+                seatBookingInfo.setPrice(bookedSeat.getPrice());
+
+                seatBookingInfos.add(seatBookingInfo);
+            }
+
+            bookingResponseDTO.setSeats(seatBookingInfos);
+            bookingResponseDTOs.add(bookingResponseDTO);
+        }
+        return bookingResponseDTOs;
     }
 }
