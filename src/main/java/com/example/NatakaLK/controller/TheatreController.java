@@ -3,7 +3,6 @@ package com.example.NatakaLK.controller;
 import com.example.NatakaLK.dto.requestDTO.TheatreDTO;
 import com.example.NatakaLK.dto.responseDTO.SeatTypeResponseDTO;
 import com.example.NatakaLK.dto.responseDTO.TheatreResponseDTO;
-import com.example.NatakaLK.model.Theatre;
 import com.example.NatakaLK.service.TheatreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -37,5 +36,14 @@ public class TheatreController {
     @PreAuthorize("hasAnyRole('Admin','TheatreManager')")
     public ResponseEntity<String> createPermanentTheater(@RequestBody TheatreDTO theatreDTO, @PathVariable int managerId) {
         return ResponseEntity.ok(theatreService.createPermanentTheatre(theatreDTO, managerId));
+    }
+
+    @DeleteMapping("/delete")
+    @PreAuthorize("hasAnyRole('Admin','Organizer','TheatreManager')")
+    public ResponseEntity<String> deleteTheatre(@RequestParam long theatreId, @RequestParam int id) {
+        if (id >0){
+            return ResponseEntity.ok(theatreService.deleteTheatre(theatreId, id));
+        }
+        return ResponseEntity.ok("Something went wrong");
     }
 }

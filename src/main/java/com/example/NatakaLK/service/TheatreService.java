@@ -89,7 +89,7 @@ public class TheatreService {
 
     public TheatreResponseDTO createTemporaryTheatre(TheatreDTO theatreDTO, int organizerId, int showId) {
         User organizer = userRepo.findById(organizerId)
-                .orElseThrow(() -> new RuntimeException("Organizer not found"));
+                .orElseThrow(() -> new RuntimeException("User not found"));
         Show show = showRepo.findById(showId)
                 .orElseThrow(() -> new RuntimeException("Show not found"));
 
@@ -133,5 +133,16 @@ public class TheatreService {
                 .collect(Collectors.toList());
 
         return seatTypeResponseDTOs;
+    }
+
+    public String deleteTheatre(long theatreId, int id) {
+        User user = userRepo.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        Theatre theatre = theatreRepo.findById(theatreId).orElseThrow(() -> new RuntimeException("Theatre not found"));
+
+        if (theatre.getCreatedBy() != user) {
+            return "Theatre Deleted Failed! Try Again!";
+        }
+        theatreRepo.delete(theatre);
+        return "Theatre Deleted Successfully!";
     }
 }
