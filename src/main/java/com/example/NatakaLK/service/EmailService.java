@@ -1,11 +1,9 @@
 package com.example.NatakaLK.service;
 
 import com.example.NatakaLK.dto.responseDTO.BookingResponseDTO;
-import com.example.NatakaLK.util.QRCodeGenerator;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -17,7 +15,7 @@ public class EmailService {
     private String fromEmail ="kavindubandara2018@gmail.com";
 
     @Autowired
-    private QRCodeGenerator qrCodeGenerator;
+    private QRCodeService qrCodeService;
 
     @Autowired
     private JavaMailSender mailSender;
@@ -38,9 +36,7 @@ public class EmailService {
         Context context = new Context();
         context.setVariable("booking", responseDTO);
 
-        String qrText = responseDTO.getTicketId(); // or encode other ticket info
-        String qrBase64 = qrCodeGenerator.generateBase64QrCode(qrText); // You must implement this method
-
+        String qrBase64 = qrCodeService.generateTicketQRCode(responseDTO);
         context.setVariable("qrBase64", qrBase64);
 
         String htmlContent = templateEngine.process("ticket-email.html", context);
@@ -56,9 +52,7 @@ public class EmailService {
             helper.setSubject(subject);
             helper.setText(html, true);
             mailSender.send(message);
-//            log.info("Email sent successfully to {}", to);
         } catch (MessagingException e) {
-//            log.error("Failed to send email to {}: {}", to, e.getMessage());
             throw new RuntimeException("Failed to send email to " + to, e);
         }
     }

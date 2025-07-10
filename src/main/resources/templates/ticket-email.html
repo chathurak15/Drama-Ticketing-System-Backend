@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Show Ticket</title>
     <style>
-        /* Styles as before: trimmed for brevity */
         body {
-            font-family: Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             margin: 0;
             padding: 0;
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             color: #333;
+            line-height: 1.6;
         }
 
         .email-container {
@@ -33,6 +33,7 @@
         .logo {
             font-size: 32px;
             font-weight: bold;
+            margin-bottom: 10px;
         }
 
         .success-badge {
@@ -42,6 +43,7 @@
             border-radius: 20px;
             font-size: 14px;
             margin: 10px 0;
+            font-weight: 500;
         }
 
         .content {
@@ -52,25 +54,28 @@
             font-size: 24px;
             font-weight: bold;
             color: #661F19;
+            margin-bottom: 10px;
         }
 
         .show-title {
             font-size: 28px;
             font-weight: bold;
             margin-bottom: 20px;
+            color: #333;
         }
 
         .ticket-info {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(45%, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
             margin: 20px 0;
         }
 
         .info-item {
-            background: #f1f1f1;
+            background: #f8f9fa;
             padding: 15px;
             border-radius: 10px;
+            border: 1px solid #e9ecef;
         }
 
         .info-label {
@@ -78,16 +83,21 @@
             text-transform: uppercase;
             color: #666;
             margin-bottom: 5px;
+            font-weight: 600;
         }
 
         .info-value {
             font-size: 16px;
-            font-weight: bold;
+            font-weight: 600;
+            color: #333;
         }
 
         .qr-section {
             text-align: center;
             margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
         }
 
         .qr-code {
@@ -98,44 +108,111 @@
             border-radius: 10px;
             padding: 10px;
             background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .qr-code img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .qr-fallback {
+            color: #999;
+            font-size: 14px;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .qr-instructions {
+            font-size: 16px;
+            color: #666;
+            margin-top: 15px;
         }
 
         .seats-section {
             margin: 30px 0;
         }
 
+        .seats-title {
+            color: #661F19;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
         .seat-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 15px;
+            padding: 15px;
             margin-bottom: 10px;
-            border: 1px solid #ccc;
+            border: 1px solid #e9ecef;
             border-radius: 8px;
             background: #f9f9f9;
+        }
+
+        .seat-info {
+            display: flex;
+            align-items: center;
         }
 
         .seat-number {
             background: #661F19;
             color: #fff;
             border-radius: 50%;
-            width: 30px;
-            height: 30px;
+            width: 35px;
+            height: 35px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 14px;
             font-weight: bold;
-            margin-right: 10px;
+            margin-right: 15px;
+        }
+
+        .seat-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .seat-identifier {
+            font-weight: 600;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .seat-type {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        .seat-price {
+            font-weight: 600;
+            font-size: 16px;
+            color: #661F19;
         }
 
         .total-section {
             background: linear-gradient(45deg, #661F19, #8B2F29);
             color: white;
-            padding: 15px;
+            padding: 20px;
             text-align: center;
             border-radius: 10px;
             margin-top: 20px;
+        }
+
+        .total-label {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .total-amount {
+            font-size: 24px;
+            font-weight: bold;
         }
 
         .instructions {
@@ -143,14 +220,70 @@
             padding: 20px;
             border-radius: 10px;
             margin: 30px 0;
+            border-left: 4px solid #2196f3;
+        }
+
+        .instructions strong {
+            color: #1976d2;
+            font-size: 16px;
+        }
+
+        .instructions ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+
+        .instructions li {
+            margin: 5px 0;
+            font-size: 14px;
         }
 
         .footer {
-            background: #f1f1f1;
-            padding: 20px;
+            background: #f8f9fa;
+            padding: 25px;
             text-align: center;
             font-size: 13px;
             color: #666;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .footer strong {
+            color: #333;
+        }
+
+        .footer p {
+            margin: 5px 0;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 600px) {
+            .email-container {
+                margin: 10px;
+                border-radius: 8px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .ticket-info {
+                grid-template-columns: 1fr;
+            }
+
+            .qr-code {
+                width: 150px;
+                height: 150px;
+            }
+
+            .seat-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .seat-price {
+                align-self: flex-end;
+            }
         }
     </style>
 </head>
@@ -159,7 +292,7 @@
     <!-- Header -->
     <div class="header">
         <div class="logo">Nataka.lk</div>
-        <div class="success-badge">Booking Confirmed</div>
+        <div class="success-badge">✓ Booking Confirmed</div>
         <p>Your digital ticket is ready!</p>
     </div>
 
@@ -171,11 +304,11 @@
         <div class="ticket-info">
             <div class="info-item">
                 <div class="info-label">Date</div>
-                <div class="info-value" th:text="${#dates.format(booking.showDate, 'EEEE, MMMM dd, yyyy')}">Date</div>
+                <div class="info-value" th:text="${#dates.format(booking.showDate, 'EEEE, MMMM dd, yyyy')}">Wednesday, July 16, 2025</div>
             </div>
             <div class="info-item">
                 <div class="info-label">Time</div>
-                <div class="info-value" th:text="${booking.showTime}">18:00</div>
+                <div class="info-value" th:text="${booking.showTime}">18:21</div>
             </div>
             <div class="info-item">
                 <div class="info-label">Venue</div>
@@ -187,58 +320,62 @@
             </div>
         </div>
 
-        <!-- QR Code -->
+        <!-- QR Code  -->
         <div class="qr-section">
             <div class="qr-code">
-                <img th:if="${qrBase64 != null}" th:src="'data:image/png;base64,' + ${qrBase64}" alt="QR Code" style="width:100%; height:100%;" />
-                <div th:if="${qrBase64 == null}" style="text-align: center; color: #999;">
-                    QR Code<br/>Will be generated<br/>by backend
-                </div>
+                <img src="[[${'data:image/png;base64,' + qrBase64}]]"
+                     alt="QR Code for ticket verification"
+                     style="width: 100%; height: 100%; object-fit: contain;" />
             </div>
-            <p>📱 Show this QR code at the venue entrance</p>
+            <div class="qr-instructions">
+                <strong>📱 Show this QR code at the venue entrance</strong><br/>
+                <small>Digital or printed copy accepted</small>
+            </div>
         </div>
 
-        <!-- Seats -->
+        <!-- Seats  -->
         <div class="seats-section">
-            <h3 style="color: #661F19;">Your Seats</h3>
+            <h3 class="seats-title">Your Seats</h3>
             <div th:each="seat, iterStat : ${booking.seats}" class="seat-item">
-                <div style="display: flex; align-items: center;">
+                <div class="seat-info">
                     <div class="seat-number" th:text="${iterStat.count}">1</div>
-                    <div>
-                        <div th:text="'Seat ' + ${seat.seatIdentifier}">Seat A1</div>
-                        <small>Standard</small>
+                    <div class="seat-details">
+                        <div class="seat-identifier" th:text="'Seat ' + ${seat.seatIdentifier}">Seat A1</div>
                     </div>
                 </div>
-                <div th:text="'LKR ' + ${#numbers.formatDecimal(seat.price, 1, 2)}">LKR 1000.00</div>
+                <div class="seat-price" th:text="'LKR ' + ${#numbers.formatDecimal(seat.price, 1, 2)}">LKR 1500.00</div>
             </div>
 
-            <!-- Total -->
+            <!-- Enhanced Total Section -->
             <div class="total-section">
-                <div>Total Amount</div>
-                <div class="info-value" th:text="'LKR ' + ${#numbers.formatDecimal(booking.totalAmount, 1, 2)}">LKR 0.00</div>
+                <div class="total-label">Total Amount</div>
+                <div class="total-amount" th:text="'LKR ' + ${#numbers.formatDecimal(booking.totalAmount, 1, 2)}">LKR 3000.00</div>
             </div>
         </div>
 
-        <!-- Instructions -->
+        <!-- Enhanced Instructions -->
         <div class="instructions">
-            <strong> Important Instructions:</strong>
+            <strong>📋 Important Instructions:</strong>
             <ul>
-                <li>Please arrive 30 minutes early</li>
-                <li>Show the QR code at entry</li>
-                <li>Printed or digital copy accepted</li>
-                <li>Bring valid photo ID</li>
-                <li>No outside food/drinks allowed</li>
-                <li>Silence your mobile phones</li>
+                <li><strong>Arrive 30 minutes early</strong> for entry and seating</li>
+                <li><strong>QR Code Required:</strong> Show this code at venue entrance</li>
+                <li><strong>Valid ID:</strong> Bring government-issued photo identification</li>
+                <li><strong>No Outside Items:</strong> Food, drinks, and recording devices prohibited</li>
+                <li><strong>Device Etiquette:</strong> Silence mobile phones during performance</li>
+                <li><strong>Ticket Validity:</strong> This ticket is valid only for the specified date and time</li>
             </ul>
         </div>
     </div>
 
-    <!-- Footer -->
+    <!-- Enhanced Footer -->
     <div class="footer">
-        <p>Thank you for booking with <strong>Nataka.lk</strong> 🎭</p>
-        <p>© 2025 Nataka.lk — Sri Lanka's Premier Drama Ticketing Platform</p>
-        <p>This is an automated email. For help, contact: <br>
-            <strong>support@nataka.lk | +94 11 123 4567</strong></p>
+        <p>Thank you for booking with <strong>Nataka.lk</strong></p>
+        <p><strong>Sri Lanka's Premier Drama Ticketing Platform</strong></p>
+        <p>© 2025 Nataka.lk — All rights reserved</p>
+        <hr style="border: none; border-top: 1px solid #ddd; margin: 15px 0;">
+        <p>Need help? Contact our support team:<br>
+            <strong>📧 support@nataka.lk | 📞 +94 11 123 4567</strong></p>
+        <p><small>This is an automated email. Please do not reply to this message.</small></p>
     </div>
 </div>
 </body>

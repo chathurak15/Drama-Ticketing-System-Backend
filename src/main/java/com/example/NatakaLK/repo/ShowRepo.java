@@ -47,4 +47,6 @@ public interface ShowRepo extends JpaRepository<Show, Integer> {
             @Param("userId") Integer userId);
 
     Page<Show> findAllByDramaId(Pageable pageable, int dramaId);
+
+    List<Show> findAllByUserId(int userId);
 }

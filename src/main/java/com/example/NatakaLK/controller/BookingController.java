@@ -2,6 +2,7 @@ package com.example.NatakaLK.controller;
 
 import com.example.NatakaLK.dto.requestDTO.BookingRequestDTO;
 import com.example.NatakaLK.dto.responseDTO.BookingResponseDTO;
+import com.example.NatakaLK.dto.responseDTO.PaginatedDTO;
 import com.example.NatakaLK.model.Booking;
 import com.example.NatakaLK.service.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,4 +43,20 @@ public class BookingController {
         return ResponseEntity.ok(bookingService.getAllBookingByUser(userId));
     }
 
+    @GetMapping("/all/byShow")
+    @PreAuthorize("hasAnyRole('Admin','TheatreManager')")
+    public ResponseEntity<PaginatedDTO> getAllBookingByShow(
+            @RequestParam int userId,
+            @RequestParam(required = false) Integer showId,
+            @RequestParam int page,
+            @RequestParam  int size,
+            @RequestParam(required = false) String ticketId) {
+        return ResponseEntity.ok(bookingService.getAllBookingByShow(userId,showId,page,size,ticketId));
+    }
+
+    @PutMapping("/status")
+    @PreAuthorize("hasAnyRole('Admin','TheatreManager')")
+    public ResponseEntity<String> updateBookingStatus(@RequestParam Integer bookingId, @RequestParam String status) {
+        return ResponseEntity.ok(bookingService.updateBookingStatus(bookingId,status));
+    }
 }

@@ -38,7 +38,7 @@ public class RatingService {
     public String submitRating(RatingDTO ratingDTO) {
 
         if(ratingRepo.findByUserIdAndDramaId(ratingDTO.getUserId(), ratingDTO.getDramaId()).isPresent()){
-            return "Rating Already Exists";
+            return "Your Rating is already submitted.Try Another Drama";
         }
 
         Drama drama =  dramaRepo.findById(ratingDTO.getDramaId()).orElseThrow(() -> new NotFoundException("Drama not found"));
