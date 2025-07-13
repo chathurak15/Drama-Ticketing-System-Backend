@@ -3,7 +3,6 @@ package com.example.NatakaLK.service;
 import com.example.NatakaLK.dto.requestDTO.SaveShowDTO;
 import com.example.NatakaLK.dto.requestDTO.ShowPricingDTO;
 import com.example.NatakaLK.dto.requestDTO.UpdateShowDTO;
-import com.example.NatakaLK.dto.responseDTO.CityDTO;
 import com.example.NatakaLK.dto.responseDTO.PaginatedDTO;
 import com.example.NatakaLK.dto.responseDTO.ShowResponseDTO;
 import com.example.NatakaLK.dto.responseDTO.TheatreResponseDTO;
@@ -20,7 +19,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -192,27 +190,61 @@ public class ShowService {
     }
 
     public String updateShow(UpdateShowDTO updateShowDTO) {
-        Show show = showRepo.findById(updateShowDTO.getShowId()).get();
-        if (show != null && show.getUser().getId() == updateShowDTO.getUserId()) {
-            show.setTitle(updateShowDTO.getTitle());
-            show.setDescription(updateShowDTO.getDescription());
-            show.setImage(updateShowDTO.getImage());
-            show.setLocation(updateShowDTO.getLocation());
-            show.setShowDate(updateShowDTO.getShowDate());
-            show.setShowTime(updateShowDTO.getShowTime());
-            show.setStatus("pending");
+        Optional<Show> showOpt = showRepo.findById(updateShowDTO.getShowId());
 
-            Optional<Drama> drama = dramaRepo.findById(updateShowDTO.getDramaId());
-            if (drama.isPresent()) {
-                show.setDrama(drama.get());
-                showRepo.save(show);
-                return "Show updated successfully";
-            }else {
-                throw new NotFoundException("Drama not found");
-            }
-        }else{
-            throw new NotFoundException("Updated failed. Try again!");
+        if (showOpt.isEmpty()) {
+            throw new NotFoundException("Show not found");
         }
+        Show show = showOpt.get();
+
+        if (show.getUser().getId() != updateShowDTO.getUserId()) {
+           return "You are not authorized to update this show";
+        }
+        // Validate drama
+        Optional<Drama> dramaOpt = dramaRepo.findById(updateShowDTO.getDramaId());
+        if (dramaOpt.isEmpty()) {
+            throw new NotFoundException("Drama not found");
+        }
+        Optional<City> cityOpt = cityRepo.findById(updateShowDTO.getCityId());
+        if (cityOpt.isEmpty()) {
+            throw new NotFoundException("City not found");
+        }
+
+        show.setTitle(updateShowDTO.getTitle());
+        show.setDescription(updateShowDTO.getDescription());
+        show.setImage(updateShowDTO.getImage());
+        show.setLocation(updateShowDTO.getLocation());
+        show.setShowDate(updateShowDTO.getShowDate());
+        show.setShowTime(updateShowDTO.getShowTime());
+        show.setDrama(dramaOpt.get());
+        show.setCity(cityOpt.get());
+        show.setStatus("pending");
+
+        if (updateShowDTO.getTheaterId() != null) {
+            Theatre theatre = theatreRepo.findById(updateShowDTO.getTheaterId())
+                    .orElseThrow(() -> new NotFoundException("Theatre not found"));
+            show.setTheatre(theatre);
+        }
+        show = showRepo.save(show);
+
+        if (updateShowDTO.getPricing() != null) {
+            showPricingRepo.deleteByShow(show);
+
+            // Add new pricing
+            for (ShowPricingDTO pricingDTO : updateShowDTO.getPricing()) {
+                ShowPricing pricing = new ShowPricing();
+                pricing.setShow(show);
+                pricing.setPrice(pricingDTO.getPrice());
+
+                if (pricingDTO.getSeatTypeId() != null) {
+                    SeatType seatType = seatTypeRepo.findById(pricingDTO.getSeatTypeId())
+                            .orElseThrow(() -> new NotFoundException("Seat type not found"));
+                    pricing.setSeatType(seatType);
+                }
+                showPricingRepo.save(pricing);
+            }
+        }
+        return "Show updated successfully";
     }
 
     public String updateShowStatus(int id, String status) {

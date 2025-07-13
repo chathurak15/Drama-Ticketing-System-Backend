@@ -9,4 +9,6 @@ import java.util.List;
 public interface SeatTypeRepo extends JpaRepository<SeatType, Long> {
     List<SeatType> findByTheatre(Theatre theatre);
     List<SeatType> findByTheatreId(Long theatreId);
+
+    void deleteAllByTheatreId(Long id);
 }

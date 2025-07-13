@@ -10,11 +10,11 @@ import java.util.List;
 
 public interface BookedSeatRepo extends JpaRepository<BookedSeat, Integer> {
 
-    @Query("SELECT b FROM BookedSeat b WHERE b.seatId = :seat AND b.show = :show")
+    @Query("SELECT b FROM BookedSeat b WHERE b.seatId = :seat AND b.show = :show AND b.isBooked = true")
     BookedSeat findBookedSeatBySeatIdAndShow(@Param("seat") String seat, @Param("show") Show show);
 
-    @Query("SELECT b.seatId FROM BookedSeat b WHERE b.show.showId = :showId AND b.isBooked = true")
-    List<String> getLockSeatIdsByShowId(int showId);
-
     List<BookedSeat> findAllByBooking_Id(int bookingId);
+
+    @Query("SELECT b.seatId FROM BookedSeat b WHERE b.show.showId = :showId AND b.isBooked = true")
+    List<String> getBookedSeatByShowId(int showId);
 }

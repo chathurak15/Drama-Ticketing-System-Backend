@@ -11,4 +11,6 @@ import java.util.Optional;
 public interface ShowPricingRepo extends JpaRepository<ShowPricing, Long> {
 
     List<ShowPricing> findByShow(Show show);
+
+    void deleteByShow(Show show);
 }

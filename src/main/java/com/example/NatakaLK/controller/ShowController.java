@@ -10,8 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("api/v1/show")
 @CrossOrigin
@@ -71,7 +69,7 @@ public class ShowController {
 //
     @PutMapping("/update")
     @PreAuthorize("hasAnyRole('Admin','Organizer','TheatreManager')")
-    public ResponseEntity<String> updateShow(@RequestBody UpdateShowDTO updateShowDTO) {
+    public ResponseEntity<String> updateShow( @RequestBody UpdateShowDTO updateShowDTO) {
         if (updateShowDTO !=null){
             return ResponseEntity.ok(showService.updateShow(updateShowDTO));
         }

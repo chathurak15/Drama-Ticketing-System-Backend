@@ -323,9 +323,7 @@
         <!-- QR Code  -->
         <div class="qr-section">
             <div class="qr-code">
-                <img src="[[${'data:image/png;base64,' + qrBase64}]]"
-                     alt="QR Code for ticket verification"
-                     style="width: 100%; height: 100%; object-fit: contain;" />
+                <img th:src="@{'cid:' + ${qrCid}}" alt="QR Code" style="width: 200px; height: 200px; border: 2px solid #661F19;" />
             </div>
             <div class="qr-instructions">
                 <strong>📱 Show this QR code at the venue entrance</strong><br/>
@@ -333,7 +331,6 @@
             </div>
         </div>
 
-        <!-- Seats  -->
         <div class="seats-section">
             <h3 class="seats-title">Your Seats</h3>
             <div th:each="seat, iterStat : ${booking.seats}" class="seat-item">
@@ -346,14 +343,12 @@
                 <div class="seat-price" th:text="'LKR ' + ${#numbers.formatDecimal(seat.price, 1, 2)}">LKR 1500.00</div>
             </div>
 
-            <!-- Enhanced Total Section -->
             <div class="total-section">
                 <div class="total-label">Total Amount</div>
                 <div class="total-amount" th:text="'LKR ' + ${#numbers.formatDecimal(booking.totalAmount, 1, 2)}">LKR 3000.00</div>
             </div>
         </div>
 
-        <!-- Enhanced Instructions -->
         <div class="instructions">
             <strong>📋 Important Instructions:</strong>
             <ul>

@@ -2,6 +2,7 @@ package com.example.NatakaLK.service;
 
 import com.example.NatakaLK.dto.requestDTO.SeatTypeDTO;
 import com.example.NatakaLK.dto.requestDTO.TheatreDTO;
+import com.example.NatakaLK.dto.requestDTO.TheatreUpdateDTO;
 import com.example.NatakaLK.dto.responseDTO.SeatTypeResponseDTO;
 import com.example.NatakaLK.dto.responseDTO.TheatreResponseDTO;
 import com.example.NatakaLK.exception.NotFoundException;
@@ -144,5 +145,25 @@ public class TheatreService {
         }
         theatreRepo.delete(theatre);
         return "Theatre Deleted Successfully!";
+    }
+
+    public String updateTheatre(TheatreUpdateDTO dto) {
+        Theatre existing = theatreRepo.findById(dto.getId())
+                .orElseThrow(() -> new RuntimeException("Theatre not found"));
+
+        List<SeatType> seatTypes = seatTypeRepo.findByTheatreId(existing.getId());
+        seatTypeRepo.deleteAll(seatTypes);
+
+        existing = theatreRepo.findById(dto.getId()).orElseThrow(() -> new RuntimeException("Theatre not found"));
+
+        existing.setName(dto.getName());
+
+        theatreRepo.save(existing);
+        for (SeatTypeDTO seatTypeDTO : dto.getSeatTypes()) {
+            SeatType seatType = modelMapper.map(seatTypeDTO, SeatType.class);
+            seatType.setTheatre(existing);
+            seatTypeRepo.save(seatType);
+        }
+        return "Theatre Updated Successfully!";
     }
 }

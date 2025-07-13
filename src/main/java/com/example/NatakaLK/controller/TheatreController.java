@@ -1,6 +1,7 @@
 package com.example.NatakaLK.controller;
 
 import com.example.NatakaLK.dto.requestDTO.TheatreDTO;
+import com.example.NatakaLK.dto.requestDTO.TheatreUpdateDTO;
 import com.example.NatakaLK.dto.responseDTO.SeatTypeResponseDTO;
 import com.example.NatakaLK.dto.responseDTO.TheatreResponseDTO;
 import com.example.NatakaLK.service.TheatreService;
@@ -45,5 +46,11 @@ public class TheatreController {
             return ResponseEntity.ok(theatreService.deleteTheatre(theatreId, id));
         }
         return ResponseEntity.ok("Something went wrong");
+    }
+
+    @PutMapping("/update")
+    @PreAuthorize("hasAnyRole('Admin','Organizer','TheatreManager')")
+    public ResponseEntity<String> updateTheatre(@RequestBody TheatreUpdateDTO theatreUpdateDTO) {
+        return ResponseEntity.ok(theatreService.updateTheatre(theatreUpdateDTO));
     }
 }

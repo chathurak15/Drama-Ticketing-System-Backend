@@ -4,6 +4,7 @@ import com.example.NatakaLK.dto.responseDTO.BookingResponseDTO;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -29,21 +30,21 @@ public class EmailService {
 
         String htmlContent = templateEngine.process("welcome-email.html", context);
 
-        sendHtmlEmail(to, "Welcome to Nataka.lk", htmlContent);
+        sendHtmlEmail(to, "Welcome to Nataka.lk", htmlContent,null);
     }
 
     public void sendTicketEmail(String to, BookingResponseDTO responseDTO) {
         Context context = new Context();
         context.setVariable("booking", responseDTO);
 
-        String qrBase64 = qrCodeService.generateTicketQRCode(responseDTO);
-        context.setVariable("qrBase64", qrBase64);
+        byte[] qrBytes = qrCodeService.generateQRCodeBytes(responseDTO.getTicketId(), 300, 300);
+        context.setVariable("qrCid", "qrCodeImage");
 
         String htmlContent = templateEngine.process("ticket-email.html", context);
-        sendHtmlEmail(to, "Your Ticket from Nataka.lk", htmlContent);
+        sendHtmlEmail(to, "Your Ticket from Nataka.lk", htmlContent,qrBytes);
     }
 
-    private void sendHtmlEmail(String to, String subject, String html) {
+    private void sendHtmlEmail(String to, String subject, String html, byte[] qrBytes) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
@@ -51,9 +52,15 @@ public class EmailService {
             helper.setFrom(fromEmail);
             helper.setSubject(subject);
             helper.setText(html, true);
+
+            if (qrBytes != null) {
+                helper.addInline("qrCodeImage", new ByteArrayResource(qrBytes), "image/png");
+            }
+
             mailSender.send(message);
         } catch (MessagingException e) {
             throw new RuntimeException("Failed to send email to " + to, e);
         }
     }
+
 }

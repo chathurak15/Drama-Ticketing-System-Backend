@@ -73,7 +73,7 @@ public class SeatService {
                 .orElseThrow(() -> new NotFoundException("Show is not available"));
 
         List<String> lockedSeats = lockedSeatRepo.getLockSeatIdsByShowId(showId);
-        List<String> bookedSeats = bookedSeatRepo.getLockSeatIdsByShowId(showId);
+        List<String> bookedSeats = bookedSeatRepo.getBookedSeatByShowId(showId);
 
         return new SeatStatusResponseDTO(bookedSeats, lockedSeats);
     }
