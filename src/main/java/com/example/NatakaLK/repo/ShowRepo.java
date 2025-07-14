@@ -49,4 +49,17 @@ public interface ShowRepo extends JpaRepository<Show, Integer> {
     Page<Show> findAllByDramaId(Pageable pageable, int dramaId);
 
     List<Show> findAllByUserId(int userId);
+
+    // Upcoming shows without filters
+    @Query("SELECT s FROM Show s WHERE s.showDate >= CURRENT_DATE AND s.status = 'approved' ORDER BY s.showDate ASC")
+    List<Show> findUpcomingShows();
+
+    // Upcoming shows by city name
+    @Query("SELECT s FROM Show s WHERE s.city.cityName LIKE %:cityName% AND s.showDate >= CURRENT_DATE AND s.status = 'approved' ORDER BY s.showDate ASC")
+    List<Show> findUpcomingShowsByCity(@Param("cityName") String cityName);
+
+    // Shows by drama title
+    @Query("SELECT s FROM Show s WHERE LOWER(s.drama.title) LIKE LOWER(CONCAT('%', :dramaTitle, '%')) AND s.status = 'approved'")
+    List<Show> findShowsByDramaTitle(@Param("dramaTitle") String dramaTitle);
+
 }
