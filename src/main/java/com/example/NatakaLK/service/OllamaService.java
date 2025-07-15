@@ -1,5 +1,6 @@
 package com.example.NatakaLK.service;
 
+import com.example.NatakaLK.model.Actor;
 import com.example.NatakaLK.model.Drama;
 import com.example.NatakaLK.model.Show;
 import com.example.NatakaLK.repo.ActorRepo;
@@ -8,6 +9,7 @@ import com.example.NatakaLK.repo.ShowRepo;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -41,14 +43,14 @@ public class OllamaService {
             if (jsonStart >= 0) {
                 aiResponse = aiResponse.substring(jsonStart);
             } else {
-                return "❌ Sorry, no JSON found in AI response.";
+                return "Sorry, no JSON found in AI response.";
             }
             JsonNode root = objectMapper.readTree(aiResponse);
             String intent = root.path("intent").asText(null);
             JsonNode params = root.path("parameters");
 
             if (intent == null) {
-                return "❌ Sorry, intent not found in AI response.";
+                return "Sorry, intent not found in AI response.";
             }
             switch (intent) {
                 case "get_upcoming_shows":
@@ -60,8 +62,8 @@ public class OllamaService {
                 case "get_drama_details":
                     return getDramaDetails(params);
 
-//                case "get_actor_details":
-//                    return getActorDetails(params);
+                case "get_actor_details":
+                    return getActorDetails(params);
 
                 default:
                     return "Sorry, I didn't understand your question. Please try asking about dramas, shows, or actors.";
@@ -69,7 +71,7 @@ public class OllamaService {
 
         } catch (Exception e) {
             // If AI call or JSON parsing fails, fallback to normal chat call or error message
-            return "❌ Sorry, I couldn't process your request: " + e.getMessage();
+            return "Sorry, I couldn't process your request: " + e.getMessage();
         }
     }
 
@@ -113,14 +115,14 @@ public class OllamaService {
         List<Show> shows = showRepo.findUpcomingShows();
 
         if (shows.isEmpty()) {
-            return "📭 No upcoming shows found at the moment.";
+            return "No upcoming shows found at the moment.";
         }
 
-        StringBuilder response = new StringBuilder("🎭 Here are some upcoming shows:\n\n");
+        StringBuilder response = new StringBuilder("Here are some upcoming shows:\n\n");
 
         for (Show show : shows) {
-            response.append("🎫 *").append(show.getTitle()).append("*\n")
-                    .append("📍 Location: ").append(show.getLocation()).append(", ").append(show.getCity().getCityName()).append("\n")
+            response.append("").append(show.getTitle()).append("\n")
+                    .append("Location: ").append(show.getLocation()).append(", ").append(show.getCity().getCityName()).append("\n")
                     .append("📅 Date: ").append(show.getShowDate().toString()).append(" ⏰ ").append(show.getShowTime()).append("\n")
                     .append("📝 Drama: ").append(show.getDrama().getTitle()).append("\n\n");
         }
@@ -140,8 +142,8 @@ public class OllamaService {
         }
         StringBuilder response = new StringBuilder("Details for shows matching: " + title + "\n\n");
         for (Show show : shows) {
-            response.append("🎫 *").append(show.getTitle()).append("*\n")
-                    .append("📍 Location: ").append(show.getLocation()).append(", ").append(show.getCity().getCityName()).append("\n")
+            response.append("").append(show.getTitle()).append("\n")
+                    .append("Location: ").append(show.getLocation()).append(", ").append(show.getCity().getCityName()).append("\n")
                     .append("📅 Date: ").append(show.getShowDate().toString()).append(" ⏰ ").append(show.getShowTime()).append("\n")
                     .append("📝 Drama: ").append(show.getDrama().getTitle()).append("\n\n");
         }
@@ -161,34 +163,37 @@ public class OllamaService {
 
         StringBuilder response = new StringBuilder("Details for dramas matching: " + title + "\n\n");
         for (Drama drama : dramas) {
-            response.append("🎭 *").append(drama.getTitle()).append("*\n")
+            response.append("").append(drama.getTitle()).append("\n")
                     .append("📝 Description: ").append(drama.getDescription() != null ? drama.getDescription() : "N/A").append("\n");
 
         }
         return response.toString();
     }
 
-//    private String getActorDetails(JsonNode params) {
-//        String actorName = params.path("actor_name").asText(null);
-//        if (actorName == null || actorName.isEmpty()) {
-//            return "Please specify the actor's name.";
-//        }
-//
-//        // Assuming you have a method in actorRepo to find actors by name ignoring case and partial match
-//        List<Actor> actors = actorRepo.findByNameContainingIgnoreCase(actorName);
-//        if (actors.isEmpty()) {
-//            return "No actors found matching name: " + actorName;
-//        }
-//
-//        StringBuilder response = new StringBuilder("Details for actors matching: " + actorName + "\n\n");
-//        for (Actor actor : actors) {
-//            response.append("🎭 *").append(actor.getName()).append("*\n")
-//                    .append("🎂 DOB: ").append(actor.getBirthday() != null ? actor.getBirthday().toString() : "N/A").append("\n")
-//                    .append("📝 Gender: ").append(actor.getGender() != null ? actor.getGender() : "N/A").append("\n\n");
-//        }
-//        return response.toString();
-//    }
-//
+    private String getActorDetails(JsonNode params) {
+        String actorName = params.path("actor_name").asText(null);
+        if (actorName == null || actorName.isEmpty()) {
+            return "Please specify the actor's name.";
+        }
+
+        // Fetch all matching actors (unpaged if you want all at once)
+        List<Actor> actors = actorRepo.findByNameContainingIgnoreCase(actorName, Pageable.unpaged()).getContent();
+
+        if (actors.isEmpty()) {
+            return "No actors found matching name: " + actorName;
+        }
+
+        StringBuilder response = new StringBuilder("Details for actors matching: " + actorName + "\n\n");
+        for (Actor actor : actors) {
+            response.append(" ").append(actor.getName()).append("\n")
+                    .append("DOB: ").append(actor.getBirthday() != null ? actor.getBirthday().toString() : "N/A").append("\n")
+                    .append("Gender: ").append(actor.getGender() != null ? actor.getGender() : "N/A").append("\n\n");
+        }
+
+        return response.toString();
+    }
+
+
     // Simple class for messages in prompt
     static class Message {
         public String role;
