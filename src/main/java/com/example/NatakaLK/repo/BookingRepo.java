@@ -4,6 +4,7 @@ import com.example.NatakaLK.model.Booking;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.beans.JavaBean;
 import java.util.List;
@@ -19,4 +20,6 @@ public interface BookingRepo extends JpaRepository<Booking, Integer> {
     Page<Booking> findByShowShowIdIn(List<Integer> showIds, Pageable pageable);
     Page<Booking> findByShowShowIdInAndTicketIdContainingIgnoreCase(List<Integer> showIds, String ticketId, Pageable pageable);
 
+    @Query("SELECT COALESCE(SUM(b.totalAmount), 0) FROM Booking b")
+    double getTotalRevenue();
 }

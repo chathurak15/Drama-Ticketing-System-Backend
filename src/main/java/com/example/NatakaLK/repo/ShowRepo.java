@@ -62,4 +62,5 @@ public interface ShowRepo extends JpaRepository<Show, Integer> {
     @Query("SELECT s FROM Show s WHERE LOWER(s.drama.title) LIKE LOWER(CONCAT('%', :dramaTitle, '%')) AND s.status = 'approved'")
     List<Show> findShowsByDramaTitle(@Param("dramaTitle") String dramaTitle);
 
+    long countByStatus(String status);
 }
