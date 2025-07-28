@@ -1,7 +1,9 @@
 package com.example.NatakaLK.config;
 
 import com.example.NatakaLK.exception.CustomAccessDeniedHandler;
+import com.example.NatakaLK.service.CustomOAuth2UserService;
 import com.example.NatakaLK.util.JwtAuthenticationEntryPoint;
+import com.example.NatakaLK.util.OAuth2LoginSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,13 +31,16 @@ public class SecurityConfig {
     @Autowired
     private JwtFilter jwtFilter;
 
+    @Autowired
+    private CustomOAuth2UserService customOAuth2UserService;
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, OAuth2LoginSuccessHandler successHandler) throws Exception {
         http
                 .cors(c -> c.configurationSource(corsConfigurationSource()))
                 .csrf(c -> c.disable())
@@ -67,6 +72,12 @@ public class SecurityConfig {
                                 "/webjars/**")
                         .permitAll()
                         .anyRequest().authenticated()
+                )
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/auth/login")
+                        .successHandler(successHandler)
+                        .userInfoEndpoint(userInfo ->
+                                userInfo.userService(customOAuth2UserService))
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling()

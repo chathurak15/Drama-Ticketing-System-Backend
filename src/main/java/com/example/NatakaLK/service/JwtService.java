@@ -42,12 +42,13 @@ public class JwtService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         user = userRepo.findByEmail(email);
         if (user != null) {
-            return new User(user.getEmail(), user.getPassword(), getAuthority(user)
-            );
-        }else{
-            throw new UsernameNotFoundException("User not found" + email);
+            String password = user.getPassword() != null ? user.getPassword() : "";
+            return new User(user.getEmail(), password, getAuthority(user));
+        } else {
+            throw new UsernameNotFoundException("User not found: " + email);
         }
     }
+
 
     private Set getAuthority(com.example.NatakaLK.model.User user) {
         Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
@@ -76,6 +77,11 @@ public class JwtService implements UserDetailsService {
         }catch (BadCredentialsException e){
             throw new Exception("Bad credentials",e);
         }
+    }
+
+    public String generateTokenByEmail(String email) {
+        UserDetails userDetails = loadUserByUsername(email);
+        return jwtUtil.generateToken(userDetails);
     }
 
 }
