@@ -59,7 +59,7 @@ Build & Run
 
 bash
 Copy code
-./mvnw spring-boot:run
+./mvnw spring-boot: run
 Access the application
 
 API will run at: http://localhost:8080
@@ -69,27 +69,27 @@ API Highlights
 
 ---
 Authentication & Users
-POST /api/auth/login – User login
+POST /api/v1/auth/login – User login
 
-POST /api/auth/register – User registration
+POST /api/v1/auth/register – User registration
 
 ---
 Dramas
-GET /api/dramas/{id} – Get drama details
+GET /api/v1/dramas/{id} – Get drama details
 
-POST /api/dramas – Add new drama
+POST /api/v1/dramas – Add new drama
 
 ---
 Shows & Booking
-GET /api/shows/{id} – Get show details
+GET /api/v1/shows/{id} – Get show details
 
-POST /api/booking – Book tickets
+POST /api/v1/booking – Book tickets
 
 ---
 Ratings
-POST /api/ratings – Submit rating
+POST /api/v1/ratings – Submit rating
 
-GET /api/ratings/{dramaId} – Get drama ratings
+GET /api/v1/ratings/{dramaId} – Get drama ratings
 
 ---
 Contributors
