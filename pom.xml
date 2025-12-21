@@ -11,6 +11,7 @@
 	<groupId>com.example</groupId>
 	<artifactId>NatakaLK</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>war</packaging>
 	<name>NatakaLK</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
@@ -119,6 +120,12 @@
 			<artifactId>spring-boot-starter-oauth2-client</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
 
 	</dependencies>
 
@@ -128,9 +135,6 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<outputDirectory>/opt/tomcat/webapps</outputDirectory>
-				</configuration>
 			</plugin>
 		</plugins>
 	</build>
