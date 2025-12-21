@@ -105,10 +105,8 @@ public class SeatService {
 
             lockedSeatRepo.save(lockedSeat);
         }
-
         return "Seats locked successfully";
     }
-
 
     @Scheduled(fixedRate = 60000)
     public void deleteExpiredLockedSeats() {

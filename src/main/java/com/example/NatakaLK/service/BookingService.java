@@ -13,10 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -76,7 +73,6 @@ public class BookingService {
         booking.setShow(show);
         booking.setUser(user);
         booking.setTotalAmount(reqDTO.getTotalAmount());
-        ;
         booking.setBookingDate(LocalDateTime.now());
         booking.setTheatre(show.getTheatre());
         booking.setTicketId("0");
@@ -261,7 +257,6 @@ public class BookingService {
         return response;
     }
 
-
     public String updateBookingStatus(Integer bookingId, String status) {
         if (bookingId != null && status != null && !status.isEmpty()) {
             Booking booking = bookingRepo.findById(bookingId).get();
@@ -270,6 +265,5 @@ public class BookingService {
             return "Booking updated successfully";
         }
         return "Booking update failed";
-
     }
 }

@@ -2,7 +2,6 @@ package com.example.NatakaLK.controller;
 
 import com.example.NatakaLK.dto.requestDTO.ActorDTO;
 import com.example.NatakaLK.dto.responseDTO.PaginatedDTO;
-import com.example.NatakaLK.model.Actor;
 import com.example.NatakaLK.service.ActorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/v1/actor")
+@CrossOrigin
 public class ActorController {
 
     @Autowired
