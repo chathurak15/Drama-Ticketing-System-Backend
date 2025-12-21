@@ -112,6 +112,6 @@ public class SeatService {
     public void deleteExpiredLockedSeats() {
         LocalDateTime cutoffTime = LocalDateTime.now().minusMinutes(10);
         lockedSeatRepo.deleteByCreatedAtBefore(cutoffTime);
-        System.out.println("Expired locked seats deleted at " + LocalDateTime.now());
+//        System.out.println("Expired locked seats deleted at " + LocalDateTime.now());
     }
 }
