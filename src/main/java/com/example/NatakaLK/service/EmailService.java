@@ -13,7 +13,7 @@ import org.thymeleaf.context.Context;
 
 @Service
 public class EmailService {
-    private String fromEmail ="kavindubandara2018@gmail.com";
+    private String fromEmail ="info@nataka.chathurakavindu.me";
 
     @Autowired
     private QRCodeService qrCodeService;
