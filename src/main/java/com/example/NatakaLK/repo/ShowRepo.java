@@ -33,7 +33,7 @@ public interface ShowRepo extends JpaRepository<Show, Integer> {
             @Param("dramaId") Integer dramaId);
 
 
-    @Query("SELECT DISTINCT s.location FROM Show s WHERE s.city.id = :cityId ORDER BY s.showDate ASC")
+    @Query("SELECT s.location FROM Show s WHERE s.city.id = :cityId GROUP BY s.location ORDER BY MIN(s.showDate) ASC")
     List<String> getDistinctLocationsByCity(@Param("cityId") int cityId);
 
     @Query("SELECT s FROM Show s " +
