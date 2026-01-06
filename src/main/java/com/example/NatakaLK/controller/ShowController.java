@@ -27,7 +27,7 @@ public class ShowController {
     }
 
     @GetMapping("/admin/all")
-    @PreAuthorize("hasAuthority('Admin')")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<?> getAllShowAdmin(@RequestParam int page, @RequestParam  int size, @RequestParam String status) {
         if (size >50){
             return ResponseEntity.ok("Item size is too large! Maximum allowed is 50.");

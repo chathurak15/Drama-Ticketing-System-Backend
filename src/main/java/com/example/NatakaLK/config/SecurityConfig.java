@@ -51,17 +51,18 @@ public class SecurityConfig {
                 .sessionManagement(s->s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->authorizationManagerRequestMatcherRegistry
                         .requestMatchers(
-                                "api/v1/mail/send",
+                                "/api/v1/mail/send",
                                 "/api/v1/auth/login",
                                 "/api/v1/auth/register",
                                 "/api/v1/translate",
                                 "/api/v1/drama/all",
                                 "/api/v1/drama/{id}",
                                 "/api/v1/drama/find/**",
-                                "api/v1/city/**",
-                                "api/v1/actor/all",
-                                "api/v1/city/venue/{id}",
+                                "/api/v1/city/**",
+                                "/api/v1/actor/all",
+                                "/api/v1/city/venue/{id}",
                                 "/api/v1/show/all",
+                                "/api/v1/show/admin/**",
                                 "/api/v1/show/{id}",
                                 "/api/v1/rating/**",
                                 "/api/v1/rating/getByDrama",
