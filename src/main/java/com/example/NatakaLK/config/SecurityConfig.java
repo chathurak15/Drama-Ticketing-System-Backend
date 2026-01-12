@@ -75,6 +75,7 @@ public class SecurityConfig {
                                 "/webjars/**")
                         .permitAll()
                         .anyRequest().authenticated()
+                        .requestMatchers("/api/v1/show/admin/**").hasAuthority("Admin")
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .loginPage("/auth/login")
