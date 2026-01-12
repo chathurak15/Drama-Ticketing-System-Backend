@@ -1,7 +1,6 @@
 package com.example.NatakaLK.config;
 
 import com.example.NatakaLK.exception.CustomAccessDeniedHandler;
-import com.example.NatakaLK.service.CustomOAuth2UserService;
 import com.example.NatakaLK.util.JwtAuthenticationEntryPoint;
 import com.example.NatakaLK.util.OAuth2LoginSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +33,6 @@ public class SecurityConfig {
 
     @Autowired
     private JwtFilter jwtFilter;
-
-    @Autowired
-    private CustomOAuth2UserService customOAuth2UserService;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
@@ -81,8 +77,6 @@ public class SecurityConfig {
                 .oauth2Login(oauth2 -> oauth2
                         .loginPage("/auth/login")
                         .successHandler(successHandler)
-                        .userInfoEndpoint(userInfo ->
-                                userInfo.userService(customOAuth2UserService))
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling()
