@@ -1,5 +1,6 @@
 package com.example.NatakaLK.util;
 
+import com.example.NatakaLK.config.CustomOAuth2User;
 import com.example.NatakaLK.service.JwtService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -15,6 +16,7 @@ import java.io.IOException;
 
 @Component
 public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+
     @Value("${nataka.frontend.base.url}")
     private String frontendBaseUrl;
 
@@ -30,18 +32,13 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
             HttpServletResponse response,
             Authentication authentication
     ) throws IOException, ServletException {
+        CustomOAuth2User oauthUser = (CustomOAuth2User) authentication.getPrincipal();
 
-        OAuth2User oauthUser = (OAuth2User) authentication.getPrincipal();
-        String email = oauthUser.getAttribute("email");
-
+        String email = oauthUser.getEmail();
         String jwtToken = jwtService.generateTokenByEmail(email);
 
-        Cookie jwtCookie = new Cookie("JWT", jwtToken);
-        jwtCookie.setHttpOnly(true);
-        jwtCookie.setSecure(true);
-        jwtCookie.setPath("/");
-        jwtCookie.setMaxAge(24 * 60 * 60);
-        response.addCookie(jwtCookie);
-        getRedirectStrategy().sendRedirect(request, response, frontendBaseUrl+ "/dashboard");
+        String targetUrl = frontendBaseUrl + "/dashboard?token=" + jwtToken;
+
+        getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
 }

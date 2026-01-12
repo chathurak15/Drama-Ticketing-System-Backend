@@ -1,5 +1,6 @@
 package com.example.NatakaLK.service;
 
+import com.example.NatakaLK.config.CustomOAuth2User;
 import com.example.NatakaLK.model.User;
 import com.example.NatakaLK.model.enums.RoleType;
 import com.example.NatakaLK.repo.UserRepo;
@@ -25,20 +26,24 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         String name = oAuth2User.getAttribute("name");
 
         User user = userRepo.findByEmail(email);
+
         if (user == null) {
             user = new User();
             user.setEmail(email);
-            user.setFname(name.split(" ")[0]);
-            user.setLname(name.split(" ").length > 1 ? name.split(" ")[1] : "");
+            String[] nameParts = name != null ? name.split(" ") : new String[]{"User"};
+            user.setFname(nameParts[0]);
+            user.setLname(nameParts.length > 1 ? nameParts[1] : "");
+
             user.setStatus("approved");
             user.setRole(RoleType.Customer);
             userRepo.save(user);
         } else {
-            //Update existing user's name or other details
             boolean updated = false;
-            String firstName = name.split(" ")[0];
-            String lastName = name.split(" ").length > 1 ? name.split(" ")[1] : "";
+            String[] nameParts = name != null ? name.split(" ") : new String[]{user.getFname()};
+            String firstName = nameParts[0];
+            String lastName = nameParts.length > 1 ? nameParts[1] : "";
 
+            // Update name if changed on Google
             if (!firstName.equals(user.getFname())) {
                 user.setFname(firstName);
                 updated = true;
@@ -51,6 +56,9 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 userRepo.save(user);
             }
         }
-        return oAuth2User;
+
+        // 3. RETURN THE WRAPPER (Critical!)
+        // If you return 'oAuth2User' here, your SuccessHandler will crash.
+        return new CustomOAuth2User(oAuth2User, user);
     }
 }
