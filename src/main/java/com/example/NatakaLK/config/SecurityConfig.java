@@ -46,9 +46,7 @@ public class SecurityConfig {
                 .csrf(c -> c.disable())
                 .sessionManagement(s->s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->authorizationManagerRequestMatcherRegistry
-                        .requestMatchers("/api/v1/show/admin/**").hasAuthority("ROLE_Admin")
-                        .requestMatchers("/api/v1/admin/**").hasAuthority("ROLE_Admin")
-                                .requestMatchers(
+                        .requestMatchers(
                                 "/",
                                 "/error",
                                 "/api/v1/mail/send",
