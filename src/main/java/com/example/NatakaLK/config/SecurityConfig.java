@@ -46,7 +46,9 @@ public class SecurityConfig {
                 .csrf(c -> c.disable())
                 .sessionManagement(s->s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->authorizationManagerRequestMatcherRegistry
-                        .requestMatchers(
+                        .requestMatchers("/api/v1/show/admin/**").hasAuthority("Admin")
+                        .requestMatchers("/api/v1/admin/**").hasAuthority("Admin")
+                                .requestMatchers(
                                 "/",
                                 "/error",
                                 "/api/v1/mail/send",
@@ -75,7 +77,6 @@ public class SecurityConfig {
                                 "/webjars/**")
                         .permitAll()
                         .anyRequest().authenticated()
-                        .requestMatchers("/api/v1/show/admin/**").hasAuthority("Admin")
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .loginPage("/auth/login")
