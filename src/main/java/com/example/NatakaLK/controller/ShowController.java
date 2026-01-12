@@ -8,6 +8,8 @@ import com.example.NatakaLK.service.ShowService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -27,8 +29,14 @@ public class ShowController {
     }
 
     @GetMapping("/admin/all")
-    @PreAuthorize("hasRole('Admin')")
+//    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<?> getAllShowAdmin(@RequestParam int page, @RequestParam  int size, @RequestParam String status) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("========== DEBUGGER ==========");
+        System.out.println("User: " + auth.getName());
+        System.out.println("Authorities: " + auth.getAuthorities());
+        System.out.println("Endpoint Reached: /admin/all");
+        System.out.println("==============================");
         if (size >50){
             return ResponseEntity.ok("Item size is too large! Maximum allowed is 50.");
         }
