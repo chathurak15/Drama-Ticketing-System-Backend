@@ -54,16 +54,20 @@ public class BookingService {
             String seat = seatInfo.getSeatIdentifier().trim();
             seatsId.add(seat);
 
-            LockedSeat lockedSeat = lockedSeatRepo.findLockedSeatBySeatIdAndShow(seat, show);
-            BookedSeat bookedSeat = bookedSeatRepo.findBookedSeatBySeatIdAndShow(seat, show);
+            // Handle Optional return type safely
+            Optional<LockedSeat> lockedSeatOpt = lockedSeatRepo.findLockedSeatBySeatIdAndShow(seat, show);
+            // Use the boolean check method for booking status (safer)
+            boolean isBooked = bookedSeatRepo.existsBySeatIdAndShowAndIsBookedTrue(seat, show);
 
-            if (lockedSeat != null && lockedSeat.isLocked()) {
-                if (lockedSeat.getUser() == null || !lockedSeat.getUser().getId().equals(user.getId())) {
-                    throw new NotFoundException("Seat " + seat + " is currently locked by another user");
+            if (lockedSeatOpt.isPresent()) {
+                LockedSeat lockedSeat = lockedSeatOpt.get();
+                if (lockedSeat.isLocked()) {
+                    if (lockedSeat.getUser() == null || !lockedSeat.getUser().getId().equals(user.getId())) {
+                        throw new NotFoundException("Seat " + seat + " is currently locked by another user");
+                    }
                 }
             }
-
-            if (bookedSeat != null) {
+            if (isBooked) {
                 throw new NotFoundException("Seat " + seat + " is already booked");
             }
         }
@@ -85,6 +89,7 @@ public class BookingService {
         for (SeatBookingInfo seatInfo : seats) {
             String seatId = seatInfo.getSeatIdentifier().trim();
             double price = seatInfo.getPrice();
+
             BookedSeat bookedSeat = new BookedSeat();
             bookedSeat.setSeatId(seatId);
             bookedSeat.setShow(show);
@@ -93,13 +98,16 @@ public class BookingService {
             bookedSeat.setPrice(price);
             bookedSeatRepo.save(bookedSeat);
 
-            LockedSeat lockedSeat = lockedSeatRepo.findLockedSeatBySeatIdAndShow(seatId, show);
-            if (lockedSeat != null && lockedSeat.isLocked()) {
-                lockedSeat.setLocked(false);
-                lockedSeatRepo.save(lockedSeat);
+            Optional<LockedSeat> lockedSeatOpt = lockedSeatRepo.findLockedSeatBySeatIdAndShow(seatId, show);
+            if (lockedSeatOpt.isPresent()) {
+                LockedSeat lockedSeat = lockedSeatOpt.get();
+                if (lockedSeat.isLocked()) {
+                    lockedSeat.setLocked(false);
+                    lockedSeatRepo.save(lockedSeat);
+                }
             }
         }
-//        emailService.sendTicketEmail(user.getEmail(), getBookingByTicketId(booking.getTicketId()));
+        emailService.sendTicketEmail(user.getEmail(), getBookingByTicketId(booking.getTicketId()));
         return booking.getTicketId();
     }
 

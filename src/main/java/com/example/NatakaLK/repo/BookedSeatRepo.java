@@ -17,4 +17,6 @@ public interface BookedSeatRepo extends JpaRepository<BookedSeat, Integer> {
 
     @Query("SELECT b.seatId FROM BookedSeat b WHERE b.show.showId = :showId AND b.isBooked = true")
     List<String> getBookedSeatByShowId(int showId);
+
+    boolean existsBySeatIdAndShowAndIsBookedTrue(String seatId, Show show);
 }
