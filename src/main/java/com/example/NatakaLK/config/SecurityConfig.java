@@ -67,14 +67,12 @@ public class SecurityConfig {
                                 "/api/v1/seat/seat-plan/{showId}",
                                 "/api/v1/seat/unavailable-seats/{showId}",
                                 "/uploads/**",
-//                                "/api/v1/admin/dashboard",
                                 "/swagger-ui/index.html#",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/swagger-resources/**",
                                 "/webjars/**")
                         .permitAll()
-                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2

@@ -19,7 +19,7 @@ public class ChatController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN','TheatreManager','Customer')")
+    @PreAuthorize("hasAnyRole('Admin','TheatreManager','Customer')")
     public ResponseEntity<?> chat(@RequestBody Map<String, String> payload) {
         String userMessage = payload.get("message");
         String reply = ollamaService.getReply(userMessage);

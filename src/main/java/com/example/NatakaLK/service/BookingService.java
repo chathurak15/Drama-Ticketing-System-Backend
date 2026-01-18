@@ -99,7 +99,7 @@ public class BookingService {
                 lockedSeatRepo.save(lockedSeat);
             }
         }
-        emailService.sendTicketEmail(user.getEmail(), getBookingByTicketId(booking.getTicketId()));
+//        emailService.sendTicketEmail(user.getEmail(), getBookingByTicketId(booking.getTicketId()));
         return booking.getTicketId();
     }
 

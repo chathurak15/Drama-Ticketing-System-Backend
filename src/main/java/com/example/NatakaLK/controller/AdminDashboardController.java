@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("api/v1/admin/dashboard")
+@RequestMapping("api/v1/dashboard")
 @CrossOrigin
 public class AdminDashboardController {
     @Autowired
@@ -25,7 +25,7 @@ public class AdminDashboardController {
     private BookingRepo bookingRepository;
 
     @GetMapping("/stats")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('Admin')")
     public DashboardStatsDTO getDashboardStats() {
         DashboardStatsDTO stats = new DashboardStatsDTO();
 

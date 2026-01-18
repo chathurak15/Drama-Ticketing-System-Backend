@@ -52,10 +52,7 @@ public class JwtService implements UserDetailsService {
 
     private Set getAuthority(com.example.NatakaLK.model.User user) {
         Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
-        if (user.getRole() != null) {
-            String roleName = user.getRole().toString().toUpperCase(); 
-            grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_" + roleName));
-        }
+        grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_"+ user.getRole()));
         return grantedAuthorities;
     }
 

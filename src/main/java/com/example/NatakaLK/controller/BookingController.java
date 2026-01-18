@@ -32,19 +32,19 @@ public class BookingController {
     }
 
     @GetMapping("")
-    @PreAuthorize("hasAnyRole('ADMIN','Customer','TheatreManager')")
+    @PreAuthorize("hasAnyRole('Admin','Customer','TheatreManager')")
     public ResponseEntity<BookingResponseDTO> getBooking(@RequestParam String ticketId) {
         return ResponseEntity.ok(bookingService.getBookingByTicketId(ticketId));
     }
 
     @GetMapping("/all/byUser")
-    @PreAuthorize("hasAnyRole('ADMIN','Customer','TheatreManager')")
+    @PreAuthorize("hasAnyRole('Admin','Customer','TheatreManager')")
     public ResponseEntity<List<BookingResponseDTO>> getAllBookingByUser(@RequestParam int userId) {
         return ResponseEntity.ok(bookingService.getAllBookingByUser(userId));
     }
 
     @GetMapping("/all/byShow")
-    @PreAuthorize("hasAnyRole('ADMIN','TheatreManager')")
+    @PreAuthorize("hasAnyRole('Admin','TheatreManager')")
     public ResponseEntity<PaginatedDTO> getAllBookingByShow(
             @RequestParam int userId,
             @RequestParam(required = false) Integer showId,
@@ -55,7 +55,7 @@ public class BookingController {
     }
 
     @PutMapping("/status")
-    @PreAuthorize("hasAnyRole('ADMIN','TheatreManager')")
+    @PreAuthorize("hasAnyRole('Admin','TheatreManager')")
     public ResponseEntity<String> updateBookingStatus(@RequestParam Integer bookingId, @RequestParam String status) {
         return ResponseEntity.ok(bookingService.updateBookingStatus(bookingId,status));
     }
