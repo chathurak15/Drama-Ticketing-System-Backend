@@ -36,7 +36,7 @@ public class DramaController {
     }
 
     @PostMapping("/add")
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> addDrama(@RequestBody DramaRequestDTO dramaDTO) {
         return ResponseEntity.ok(dramaService.addDrama(dramaDTO));
     }
@@ -49,7 +49,7 @@ public class DramaController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deleteDrama(@PathVariable int id) {
         if (id >0){
             return ResponseEntity.ok(dramaService.deleteDrama(id));
@@ -58,7 +58,7 @@ public class DramaController {
     }
 
     @PutMapping("/update")
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> updateDrama(@RequestBody DramaUpdateDTO dramaUpdateDTO) {
         if (dramaUpdateDTO !=null){
             return ResponseEntity.ok(dramaService.updateDrama(dramaUpdateDTO));

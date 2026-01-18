@@ -17,7 +17,7 @@ public class ActorController {
     private ActorService actorService;
 
     @PostMapping("/add")
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> addActor(@RequestBody ActorDTO actorDTO) {
         return ResponseEntity.ok(actorService.addActor(actorDTO));
     }
@@ -36,7 +36,7 @@ public class ActorController {
     }
 
     @DeleteMapping("{id}")
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deleteActor(@PathVariable int id) {
         return ResponseEntity.ok(actorService.deleteActor(id));
     }

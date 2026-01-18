@@ -25,7 +25,7 @@ public class AdminDashboardController {
     private BookingRepo bookingRepository;
 
     @GetMapping("/stats")
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     public DashboardStatsDTO getDashboardStats() {
         DashboardStatsDTO stats = new DashboardStatsDTO();
 

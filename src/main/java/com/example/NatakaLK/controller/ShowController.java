@@ -29,7 +29,7 @@ public class ShowController {
         return ResponseEntity.ok("Something went wrong");
     }
     @GetMapping("/user/all")
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?>getAllUsers(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam int size) {
@@ -42,7 +42,7 @@ public class ShowController {
     }
 
     @GetMapping("/admin/all")
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getAllShowAdmin(@RequestParam int page, @RequestParam  int size, @RequestParam String status) {
         if (size >50){
             return ResponseEntity.ok("Item size is too large! Maximum allowed is 50.");
