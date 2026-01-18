@@ -2,7 +2,6 @@ package com.example.NatakaLK.controller;
 
 import com.example.NatakaLK.dto.requestDTO.UserUpdateDTO;
 import com.example.NatakaLK.dto.responseDTO.PaginatedDTO;
-import com.example.NatakaLK.dto.requestDTO.RegisterDTO;
 import com.example.NatakaLK.dto.responseDTO.UserResponseDTO;
 import com.example.NatakaLK.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
