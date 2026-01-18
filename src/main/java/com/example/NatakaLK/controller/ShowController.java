@@ -43,22 +43,13 @@ public class ShowController {
 
     @GetMapping("/admin/all")
     @PreAuthorize("hasRole('Admin')")
-    public String getAllshows(){
-        return "shows";
+    public ResponseEntity<?> getAllShowAdmin(@RequestParam int page, @RequestParam  int size, @RequestParam String status) {
+        if (size >50){
+            return ResponseEntity.ok("Item size is too large! Maximum allowed is 50.");
+        }
+        PaginatedDTO shows = showService.getAll(page,size,status);
+        return ResponseEntity.ok(shows);
     }
-
-    @GetMapping("/admin")
-    @PreAuthorize("hasRole('Admin')")
-    public String test(){
-        return "test /admin";
-    }
-//    public ResponseEntity<?> getAllShowAdmin(@RequestParam int page, @RequestParam  int size, @RequestParam String status) {
-//        if (size >50){
-//            return ResponseEntity.ok("Item size is too large! Maximum allowed is 50.");
-//        }
-//        PaginatedDTO shows = showService.getAll(page,size,status);
-//        return ResponseEntity.ok(shows);
-//    }
 
     @GetMapping("/all")
     public ResponseEntity<?> getAllShow(@RequestParam int page,

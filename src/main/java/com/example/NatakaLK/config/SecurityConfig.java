@@ -74,6 +74,7 @@ public class SecurityConfig {
                                 "/swagger-resources/**",
                                 "/webjars/**")
                         .permitAll()
+                        .requestMatchers("/api/v1/admin/**").hasRole("Admin")
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
@@ -81,9 +82,10 @@ public class SecurityConfig {
                         .successHandler(successHandler)
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling()
-                .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
-                .accessDeniedHandler(new CustomAccessDeniedHandler());
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
+                        .accessDeniedHandler(new CustomAccessDeniedHandler())
+                );
         return http.build();
     }
 
