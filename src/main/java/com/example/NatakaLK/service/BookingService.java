@@ -4,9 +4,12 @@ import com.example.NatakaLK.dto.requestDTO.BookingRequestDTO;
 import com.example.NatakaLK.dto.requestDTO.SeatBookingInfo;
 import com.example.NatakaLK.dto.responseDTO.BookingResponseDTO;
 import com.example.NatakaLK.dto.responseDTO.PaginatedDTO;
+import com.example.NatakaLK.dto.responseDTO.PaymentInitResponseDTO;
 import com.example.NatakaLK.exception.NotFoundException;
 import com.example.NatakaLK.model.*;
 import com.example.NatakaLK.repo.*;
+import com.example.NatakaLK.service.payment.PayHereService;
+import com.example.NatakaLK.service.payment.PaymentVerificationService;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Transactional
@@ -38,8 +38,10 @@ public class BookingService {
     private BookedSeatRepo bookedSeatRepo;
     @Autowired
     private EmailService emailService;
+    @Autowired private PayHereService payHereService;
+    @Autowired private PaymentVerificationService paymentVerificationService;
 
-    public String addBooking(BookingRequestDTO reqDTO) {
+    public PaymentInitResponseDTO addBooking(BookingRequestDTO reqDTO) {
         Show show = showRepo.findById(reqDTO.getShowId())
                 .orElseThrow(() -> new IllegalStateException("Show not found"));
 
@@ -80,7 +82,7 @@ public class BookingService {
         booking.setBookingDate(LocalDateTime.now());
         booking.setTheatre(show.getTheatre());
         booking.setTicketId("0");
-        booking.setStatus("Confirmed");
+        booking.setStatus("PENDING");
         booking.setSeatCount(seats.size());
         bookingRepo.save(booking);
         booking.setTicketId(generateTicketId(show.getTheatre(), show, seatsId, booking.getId()));
@@ -107,8 +109,27 @@ public class BookingService {
                 }
             }
         }
-        emailService.sendTicketEmail(user.getEmail(), getBookingByTicketId(booking.getTicketId()));
-        return booking.getTicketId();
+        return payHereService.generatePaymentData(booking);
+    }
+
+    //Handle PayHere Notify
+    public String confirmPayment(Map<String, String> paymentData) {
+        boolean isValid = paymentVerificationService.verifyPayment(paymentData);
+
+        if (isValid) {
+            String orderId = paymentData.get("order_id");
+            Booking booking = bookingRepo.findById(Integer.parseInt(orderId))
+                    .orElseThrow(() -> new NotFoundException("Booking not found"));
+
+            if (!"Confirmed".equals(booking.getStatus())) {
+                booking.setStatus("Confirmed");
+                bookingRepo.save(booking);
+                emailService.sendTicketEmail(booking.getUser().getEmail(), getBookingByTicketId(booking.getTicketId()));
+            }
+            return "Payment Verified & Confirmed";
+        } else {
+            return "Payment Verification Failed";
+        }
     }
 
     //Generate unique TicketId(String)
